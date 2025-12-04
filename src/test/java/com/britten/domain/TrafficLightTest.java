@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TrafficLightTest {
 
@@ -22,7 +21,7 @@ public class TrafficLightTest {
         assertThat(trafficLight.getGreenDuration()).isEqualTo(greenDuration);
         assertThat(trafficLight.getYellowDuration()).isEqualTo(yellowDuration);
         assertThat(trafficLight.getRedDuration()).isEqualTo(redDuration);
-        assertThat(trafficLight.getCylceTics()).isEqualTo(cycleTics);
+        assertThat(trafficLight.getCylceTicks()).isEqualTo(cycleTics);
         assertThat(trafficLight.getState()).isEqualTo(initState);
     }
 
@@ -36,5 +35,72 @@ public class TrafficLightTest {
         assertThatThrownBy(() -> new TrafficLight(greenDuration,yellowDuration,redDuration))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Traffic Light duration cannot be negative or zero.");
+    }
+
+    @Test
+    public void testTrafficLightUpdate_stateShouldSwitchFromRedToGreen(){
+        int greenDuration = 5;
+        int yellowDuration = 1;
+        int redDuration = 10;
+
+        TrafficLight trafficLight = new TrafficLight(greenDuration,yellowDuration,redDuration);
+
+        int counter = 0;
+        while(counter < redDuration - 1){
+            counter++;
+            trafficLight.update();
+        }
+
+        assertThat(trafficLight.getState()).isEqualTo(TrafficLight.State.RED);
+
+        trafficLight.update();
+
+        assertThat(trafficLight.getState()).isEqualTo(TrafficLight.State.GREEN);
+    }
+
+    @Test
+    public void testTrafficLightUpdate_stateShouldSwitchFromGreenToYellow(){
+        int greenDuration = 5;
+        int yellowDuration = 1;
+        int redDuration = 10;
+
+        TrafficLight trafficLight = new TrafficLight(greenDuration,yellowDuration,redDuration);
+
+
+
+        int counter = 0;
+        while(counter < redDuration + greenDuration - 1){
+            counter++;
+            trafficLight.update();
+        }
+
+        assertThat(trafficLight.getState()).isEqualTo(TrafficLight.State.GREEN);
+
+        trafficLight.update();
+
+        assertThat(trafficLight.getState()).isEqualTo(TrafficLight.State.YELLOW);
+    }
+
+    @Test
+    public void testTrafficLightUpdate_stateShouldSwitchFromYellowToRed(){
+        int greenDuration = 5;
+        int yellowDuration = 1;
+        int redDuration = 10;
+
+        TrafficLight trafficLight = new TrafficLight(greenDuration,yellowDuration,redDuration);
+
+
+
+        int counter = 0;
+        while(counter < redDuration + greenDuration + yellowDuration - 1){
+            counter++;
+            trafficLight.update();
+        }
+
+        assertThat(trafficLight.getState()).isEqualTo(TrafficLight.State.YELLOW);
+
+        trafficLight.update();
+
+        assertThat(trafficLight.getState()).isEqualTo(TrafficLight.State.RED);
     }
 }

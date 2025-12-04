@@ -10,7 +10,8 @@ public class TrafficLight {
     private int greenDuration;
     private int yellowDuration;
     private int redDuration;
-    private int cylceTics;
+    private int cylceTicks;
+    private int currentTick;
 
     public TrafficLight(int greenDuration, int yellowDuration, int redDuration){
         if(greenDuration <= 0 || yellowDuration <= 0 || redDuration < 0)
@@ -20,7 +21,8 @@ public class TrafficLight {
         this.greenDuration = greenDuration;
         this.yellowDuration = yellowDuration;
         this.redDuration = redDuration;
-        cylceTics = greenDuration + yellowDuration + redDuration;
+        cylceTicks = greenDuration + yellowDuration + redDuration;
+        currentTick = 0;
     }
 
     public State getState() {
@@ -39,8 +41,23 @@ public class TrafficLight {
         return redDuration;
     }
 
-    public int getCylceTics() {
-        return cylceTics;
+    public int getCylceTicks() {
+        return cylceTicks;
+    }
+
+    public void update(){
+        currentTick++;
+
+        if(state == State.RED && currentTick >= redDuration){
+            state = State.GREEN;
+            currentTick = 0;
+        } else if(state == State.GREEN && currentTick >= greenDuration) {
+            state = State.YELLOW;
+            currentTick = 0;
+        } else if(state == State.YELLOW && currentTick >= yellowDuration){
+            state = State.RED;
+            currentTick = 0;
+        }
     }
 
     @Override
@@ -50,7 +67,7 @@ public class TrafficLight {
                 ", greenDuration=" + greenDuration +
                 ", yellowDuration=" + yellowDuration +
                 ", redDuration=" + redDuration +
-                ", cylceTics=" + cylceTics +
+                ", cylceTics=" + cylceTicks +
                 '}';
     }
 }

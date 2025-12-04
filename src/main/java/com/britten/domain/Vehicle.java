@@ -23,6 +23,10 @@ public abstract class Vehicle {
         return position;
     }
 
+    public void move(double delta){
+        this.position += delta;
+    }
+
     @Override
     public String toString() {
         return "Vehicle{" +
