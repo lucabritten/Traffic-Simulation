@@ -4,11 +4,13 @@ public abstract class Vehicle {
 
     private final int id;
     private Road currentRoad;
-    private double position;
+    private int position;
+    protected double speed;
 
-    public Vehicle(int id, Road currentRoad){
+    public Vehicle(int id, Road currentRoad, double speed){
         this.id = id;
         this.currentRoad = currentRoad;
+        this.speed = speed;
     }
 
     public int getId() {
@@ -19,13 +21,28 @@ public abstract class Vehicle {
         return currentRoad;
     }
 
-    public double getPosition() {
+    public int getPosition() {
         return position;
     }
 
-    public void move(double delta){
-        this.position += delta;
+    public double getSpeed(){
+        return speed;
     }
+
+    public void setPosition(int position){
+        this.position = position;
+    }
+
+    public void setCurrentRoad(Road currentRoad){
+        this.currentRoad = currentRoad;
+    }
+
+    public void setSpeed(double speed){
+        this.speed = speed;
+    }
+
+
+
 
     @Override
     public String toString() {

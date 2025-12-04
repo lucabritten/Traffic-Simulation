@@ -27,8 +27,8 @@ public class Road {
     @Override
     public String toString() {
         return "Road{" +
-                "from=" + from +
-                ", to=" + to +
+                "from=" + from.getId() +
+                ", to=" + to.getId() +
                 ", length=" + length +
                 '}';
     }

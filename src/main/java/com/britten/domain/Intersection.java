@@ -27,7 +27,7 @@ public class Intersection {
         return trafficLight;
     }
 
-    public void addRoad(Road road){
+    public void addOutgoingRoad(Road road){
         outgoingRoads.add(road);
     }
 

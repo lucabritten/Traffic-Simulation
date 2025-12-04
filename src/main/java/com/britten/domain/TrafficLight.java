@@ -2,7 +2,7 @@ package com.britten.domain;
 
 public class TrafficLight {
 
-    enum State {
+    public enum State {
         RED, YELLOW, GREEN
     }
 
