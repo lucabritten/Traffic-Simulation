@@ -8,6 +8,8 @@ public abstract class Vehicle {
     protected double speed;
 
     public Vehicle(int id, Road currentRoad, double speed){
+        if(currentRoad == null)
+            throw new IllegalArgumentException("Current road cannot be null!");
         this.id = id;
         this.currentRoad = currentRoad;
         this.speed = speed;

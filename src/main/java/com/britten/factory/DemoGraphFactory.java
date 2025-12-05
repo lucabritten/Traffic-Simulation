@@ -30,7 +30,7 @@ public class DemoGraphFactory {
 
 
 
-        Car car = new Car(1, r1,5);
+        Car car = new Car(1, r1);
 
         return new SimulationEngine(
                 List.of(car),

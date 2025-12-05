@@ -31,7 +31,9 @@ public class MovementEngine {
         }
 
         if (!road.getTo().getOutgoingRoads().isEmpty()) {
-            vehicle.setCurrentRoad(road.getTo().getOutgoingRoads().getFirst());
+            vehicle.setCurrentRoad(road.getTo().getOutgoingRoads().stream()
+                    .findFirst()
+                    .orElse(null));
             vehicle.setPosition(overflow);
         } else {
             vehicle.setPosition(road.getLength());
