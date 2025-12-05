@@ -13,6 +13,7 @@ public abstract class Vehicle {
         this.id = id;
         this.currentRoad = currentRoad;
         this.speed = speed;
+        this.position = 0;
     }
 
     public int getId() {
@@ -32,14 +33,24 @@ public abstract class Vehicle {
     }
 
     public void setPosition(int position){
+        if(position < this.position)
+            throw new IllegalArgumentException("A vehicle is not allowed to drive backwards!");
+        if(position > currentRoad.getLength())
+            throw new IllegalArgumentException("Value position is greater than length of current road.");
+
         this.position = position;
     }
 
     public void setCurrentRoad(Road currentRoad){
+        if(currentRoad == null)
+            throw new IllegalArgumentException("Road cannot be null.");
         this.currentRoad = currentRoad;
     }
 
     public void setSpeed(double speed){
+        if(speed < 0)
+            throw new IllegalArgumentException("Speed cannot be negative.");
+
         this.speed = speed;
     }
 
