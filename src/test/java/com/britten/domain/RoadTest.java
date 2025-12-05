@@ -1,5 +1,6 @@
 package com.britten.domain;
 
+import com.britten.control.FixedCycleStrategy;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -9,8 +10,8 @@ public class RoadTest {
 
     @Test
     void testInitializeRoadWithValidArgs(){
-        Intersection from = new Intersection(1,new TrafficLight(1,1,1));
-        Intersection to = new Intersection(2,new TrafficLight(1,1,1));
+        Intersection from = new Intersection(1,new TrafficLight(new FixedCycleStrategy(1,1,1)));
+        Intersection to = new Intersection(2,new TrafficLight(new FixedCycleStrategy(1,1,1)));
         int length = 100;
 
         Road road = new Road(from,to,length);
@@ -25,8 +26,8 @@ public class RoadTest {
     @Test
     void testInitializeRoadWithNegativeLengthThrowsException(){
         int length = -1;
-        Intersection from = new Intersection(1,new TrafficLight(1,1,1));
-        Intersection to = new Intersection(2,new TrafficLight(1,1,1));
+        Intersection from = new Intersection(1,new TrafficLight(new FixedCycleStrategy(1,1,1)));
+        Intersection to = new Intersection(2,new TrafficLight(new FixedCycleStrategy(1,1,1)));
 
         assertThatThrownBy(() -> new Road(from, to,length))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -36,8 +37,8 @@ public class RoadTest {
     @Test
     void testInitializeRoadWithZeroLengthThrowsException(){
         int length = 0;
-        Intersection from = new Intersection(1,new TrafficLight(1,1,1));
-        Intersection to = new Intersection(2,new TrafficLight(1,1,1));
+        Intersection from = new Intersection(1,new TrafficLight(new FixedCycleStrategy(1,1,1)));
+        Intersection to = new Intersection(2,new TrafficLight(new FixedCycleStrategy(1,1,1)));
 
         assertThatThrownBy(() -> new Road(from, to,length))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -48,7 +49,7 @@ public class RoadTest {
     void testInitializeRoadWithFromNullThrowsException(){
         int length = 10;
         Intersection from = null;
-        Intersection to = new Intersection(2,new TrafficLight(1,1,1));
+        Intersection to = new Intersection(2,new TrafficLight(new FixedCycleStrategy(1,1,1)));
 
         assertThatThrownBy(() -> new Road(from, to,length))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -58,7 +59,7 @@ public class RoadTest {
     @Test
     void testInitializeRoadWithToNullThrowsException(){
         int length = 10;
-        Intersection from = new Intersection(2,new TrafficLight(1,1,1));
+        Intersection from = new Intersection(2,new TrafficLight(new FixedCycleStrategy(1,1,1)));
         Intersection to = null;
 
         assertThatThrownBy(() -> new Road(from, to,length))

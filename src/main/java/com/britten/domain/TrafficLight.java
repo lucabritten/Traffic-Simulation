@@ -1,5 +1,7 @@
 package com.britten.domain;
 
+import com.britten.control.TrafficLightStrategy;
+
 public class TrafficLight {
 
     public enum State {
@@ -7,21 +9,15 @@ public class TrafficLight {
     }
 
     private State state;
-    private int greenDuration;
-    private int yellowDuration;
-    private int redDuration;
-    private int cylceTicks;
     private int currentTick;
+    private TrafficLightStrategy strategy;
 
-    public TrafficLight(int greenDuration, int yellowDuration, int redDuration){
-        if(greenDuration <= 0 || yellowDuration <= 0 || redDuration < 0)
-            throw new IllegalArgumentException("Traffic Light duration cannot be negative or zero.");
+    public TrafficLight(TrafficLightStrategy strategy){
+        if(strategy == null)
+            throw new IllegalArgumentException("Strategy is not allowed to be null.");
 
         state = State.RED;
-        this.greenDuration = greenDuration;
-        this.yellowDuration = yellowDuration;
-        this.redDuration = redDuration;
-        cylceTicks = greenDuration + yellowDuration + redDuration;
+        this.strategy = strategy;
         currentTick = 0;
     }
 
@@ -29,45 +25,39 @@ public class TrafficLight {
         return state;
     }
 
-    public int getGreenDuration() {
-        return greenDuration;
+    public void setState(State state){
+        this.state = state;
     }
 
-    public int getYellowDuration() {
-        return yellowDuration;
+    public int getCurrentTick(){
+        return currentTick;
     }
 
-    public int getRedDuration() {
-        return redDuration;
+    public void resetTick(){
+        this.currentTick = 0;
     }
 
-    public int getCylceTicks() {
-        return cylceTicks;
+
+    public void setStrategy(TrafficLightStrategy strategy){
+        this.strategy = strategy;
+        resetTick();
+    }
+
+    public TrafficLightStrategy getStrategy(){
+        return this.strategy;
     }
 
     public void update(){
         currentTick++;
-
-        if(state == State.RED && currentTick >= redDuration){
-            state = State.GREEN;
-            currentTick = 0;
-        } else if(state == State.GREEN && currentTick >= greenDuration) {
-            state = State.YELLOW;
-            currentTick = 0;
-        } else if(state == State.YELLOW && currentTick >= yellowDuration){
-            state = State.RED;
-            currentTick = 0;
-        }
+        state = strategy.nextState(this);
     }
 
     @Override
     public String toString() {
         return "TrafficLight{" +
                 "state=" + state +
-                ", greenDuration=" + greenDuration +
-                ", yellowDuration=" + yellowDuration +
-                ", redDuration=" + redDuration +
-                ", cylceTics=" + cylceTicks +
+                ", currentTick=" + currentTick +
+                ", strategy=" + strategy +
                 '}';
     }
 }

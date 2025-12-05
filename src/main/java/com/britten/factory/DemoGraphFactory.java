@@ -1,5 +1,6 @@
 package com.britten.factory;
 
+import com.britten.control.FixedCycleStrategy;
 import com.britten.domain.Car;
 import com.britten.domain.Intersection;
 import com.britten.domain.Road;
@@ -13,10 +14,10 @@ public class DemoGraphFactory {
 
     public static SimulationEngine buildSquareSimulation(){
 
-        Intersection i1 = new Intersection(1, new TrafficLight(5, 2, 5));
-        Intersection i2 = new Intersection(2, new TrafficLight(5,2,5));
-        Intersection i3 = new Intersection(3, new TrafficLight(5,2,5));
-        Intersection i4 = new Intersection(4, new TrafficLight(5,2,5));
+        Intersection i1 = new Intersection(1, new TrafficLight(new FixedCycleStrategy(5,2,5)));
+        Intersection i2 = new Intersection(2, new TrafficLight(new FixedCycleStrategy(5,2,5)));
+        Intersection i3 = new Intersection(3, new TrafficLight(new FixedCycleStrategy(5,2,5)));
+        Intersection i4 = new Intersection(4, new TrafficLight(new FixedCycleStrategy(5,2,5)));
 
         Road r1 = new Road(i1, i2, 7);
         Road r2 = new Road(i2, i3, 7);

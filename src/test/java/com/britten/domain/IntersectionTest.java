@@ -1,5 +1,6 @@
 package com.britten.domain;
 
+import com.britten.control.FixedCycleStrategy;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -10,7 +11,7 @@ public class IntersectionTest {
     @Test
     void testInitializeObjectWithValidArgs(){
         int id = 1;
-        TrafficLight trafficLight = new TrafficLight(1,2,1);
+        TrafficLight trafficLight = new TrafficLight(new FixedCycleStrategy(1,2,1));
 
         Intersection intersection = new Intersection(id,trafficLight);
         assertThat(intersection).isNotNull();
@@ -33,11 +34,11 @@ public class IntersectionTest {
     @Test
     void testAddRoadWithValidArg(){
         int id1 = 1;
-        TrafficLight trafficLight1 = new TrafficLight(1,2,1);
+        TrafficLight trafficLight1 = new TrafficLight(new FixedCycleStrategy(1,2,1));
         Intersection intersection1 = new Intersection(id1,trafficLight1);
 
         int id2 = 2;
-        TrafficLight trafficLight2 = new TrafficLight(1,2,1);
+        TrafficLight trafficLight2 = new TrafficLight(new FixedCycleStrategy(1,2,1));
         Intersection intersection2 = new Intersection(id2,trafficLight2);
 
         Road road = new Road(intersection1,intersection2,100);
@@ -51,7 +52,7 @@ public class IntersectionTest {
     @Test
     void testAddRoadWithNullRoad(){
         int id1 = 1;
-        TrafficLight trafficLight1 = new TrafficLight(1,2,1);
+        TrafficLight trafficLight1 = new TrafficLight(new FixedCycleStrategy(1,2,1));
         Intersection intersection1 = new Intersection(id1,trafficLight1);
 
         assertThatThrownBy(() -> intersection1.addOutgoingRoad(null))
@@ -62,11 +63,11 @@ public class IntersectionTest {
     @Test
     void testAddDuplicateRoadThrowsException(){
         int id1 = 1;
-        TrafficLight trafficLight1 = new TrafficLight(1,2,1);
+        TrafficLight trafficLight1 = new TrafficLight(new FixedCycleStrategy(1,2,1));
         Intersection intersection1 = new Intersection(id1,trafficLight1);
 
         int id2 = 2;
-        TrafficLight trafficLight2 = new TrafficLight(1,2,1);
+        TrafficLight trafficLight2 = new TrafficLight(new FixedCycleStrategy(1,2,1));
         Intersection intersection2 = new Intersection(id2,trafficLight2);
 
         Road road1 = new Road(intersection1,intersection2,100);
@@ -82,11 +83,11 @@ public class IntersectionTest {
     @Test
     void testAddRoadThatDoesNotStartAddGivenIntersection(){
         int id1 = 1;
-        TrafficLight trafficLight1 = new TrafficLight(1,2,1);
+        TrafficLight trafficLight1 = new TrafficLight(new FixedCycleStrategy(1,2,1));
         Intersection intersection1 = new Intersection(id1,trafficLight1);
 
         int id2 = 2;
-        TrafficLight trafficLight2 = new TrafficLight(1,2,1);
+        TrafficLight trafficLight2 = new TrafficLight(new FixedCycleStrategy(1,2,1));
         Intersection intersection2 = new Intersection(id2,trafficLight2);
 
         Road road = new Road(intersection2,intersection1,100);
