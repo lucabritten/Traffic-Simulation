@@ -5,6 +5,7 @@ import java.util.List;
 public abstract class Vehicle {
 
     private final int id;
+    private boolean routingEnabled = false;
 
     private List<Road> route;
     private int routeIndex;
@@ -83,6 +84,7 @@ public abstract class Vehicle {
     }
 
     public Road peekNextRoad(){
+        if (route == null) return null;
         return (routeIndex < route.size()) ? route.get(routeIndex) : null;
     }
 
@@ -91,6 +93,11 @@ public abstract class Vehicle {
     }
 
     public boolean hasDestinationReached(){
+        if (route == null && !routingEnabled)
+            return false;
+        if(route == null)
+            return true;
+
         return routeIndex >= route.size();
     }
 
@@ -124,6 +131,16 @@ public abstract class Vehicle {
 
     public void resetNextSpeedToDefault() {
         this.nextSpeed = defaultSpeed;
+    }
+
+    public boolean isRoutingEnabled(){
+        return routingEnabled;
+    }
+
+    public void enableRouting(){
+        if (route == null || route.isEmpty())
+            throw new IllegalStateException("Cannot enable routing without a route set.");
+        routingEnabled = true;
     }
 
     @Override

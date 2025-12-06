@@ -6,7 +6,6 @@ import com.britten.routing.DijkstraRoutePlanner;
 import com.britten.routing.RoadNetwork;
 import com.britten.routing.RoutePlanner;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DemoGraphFactory implements GraphFactory{
@@ -55,15 +54,19 @@ public class DemoGraphFactory implements GraphFactory{
 
         Car car1 = new Car(1, r1,1);
         car1.setRoute(planner.computeRoute(network, i1, i2));
+        car1.enableRouting();
 
         Car car2 = new Car(2, r2,10);
         car2.setRoute(planner.computeRoute(network, i2, i4));
+        car2.enableRouting();
 
         Car car3 = new Car(3, r3,10);
         car3.setRoute(planner.computeRoute(network, i3, i1));
+        car3.enableRouting();
 
         Car car4 = new Car(4, r4,5);
         car4.setRoute(planner.computeRoute(network, i4, i2));
+        car4.enableRouting();
 
         return List.of(car1, car2, car3, car4);
     }

@@ -61,7 +61,20 @@ public class MovementEngine {
             return;
         }
 
-        Road next = vehicle.peekNextRoad();
+        Road next = null;
+
+        if (vehicle.isRoutingEnabled()) {
+            // routing mode: use vehicle's planned route (may be null if route finished)
+            next = vehicle.peekNextRoad();
+        } else {
+            // non-routing mode: pick the first outgoing road if any, otherwise null (dead-end)
+            Set<Road> outgoing = road.getTo().getOutgoingRoads();
+            if (outgoing == null || outgoing.isEmpty()) {
+                next = null;
+            } else {
+                next = outgoing.iterator().next();
+            }
+        }
 
         if(next == null) {
             vehicle.getCurrentRoad().removeVehicle(vehicle);

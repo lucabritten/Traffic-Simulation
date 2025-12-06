@@ -18,8 +18,12 @@ public class SimulationEngine {
     private List<Road> allRoads;
     private CollisionResolver collisionResolver;
 
+    /**
+     * vehicles and intersections may be immutable;
+     * SimulationEngine will internally copy them into mutable lists.
+     */
     public SimulationEngine(List<Vehicle> vehicles, List<Intersection> intersections, MovementEngine movementEngine){
-        this.vehicles = vehicles;
+        this.vehicles = new ArrayList<>(vehicles);
         this.intersections = new ArrayList<>(intersections);
         this.movementEngine = movementEngine;
         collisionResolver = new CollisionResolver();
