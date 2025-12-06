@@ -7,6 +7,7 @@ import com.britten.domain.Road;
 import com.britten.domain.TrafficLight;
 import com.britten.simulation.MovementEngine;
 import com.britten.simulation.SimulationEngine;
+import com.britten.ui.AsciiRenderer;
 
 import java.util.List;
 
@@ -33,6 +34,8 @@ public class DemoGraphFactory {
         Car car2 = new Car(2, r2,10);
         Car car3 = new Car(3, r3,10);
         Car car4 = new Car(4, r4,5);
+
+        AsciiRenderer.defineSquareLayout(i1,i2,i3,i4);
 
         return new SimulationEngine(
                 List.of(car1, car2, car3, car4),
