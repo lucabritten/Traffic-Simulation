@@ -3,6 +3,7 @@ package com.britten.simulation;
 import com.britten.domain.Intersection;
 import com.britten.domain.Road;
 import com.britten.domain.Vehicle;
+import com.britten.ui.AsciiRenderer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,7 +42,7 @@ public class SimulationEngine {
         allRoads.forEach(Road::sortVehicles);
 
 
-
+        AsciiRenderer.render(allRoads, vehicles);
         vehicles.forEach( v -> {
             System.out.printf(
                     "Vehicle %d | Speed: %d | Road %d -> %d | Pos %d | TL = %s \n",
