@@ -65,7 +65,8 @@ public class MovementEngine {
 
         if(next == null) {
             vehicle.getCurrentRoad().removeVehicle(vehicle);
-            vehicle.setCurrentRoad(null);
+            vehicle.setSpeed(0);
+            System.out.println("Vehicle: " + vehicle + " arrived!");
             return;
         }
         vehicle.advanceToNextRoad();

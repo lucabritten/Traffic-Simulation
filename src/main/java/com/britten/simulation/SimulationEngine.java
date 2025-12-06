@@ -20,7 +20,7 @@ public class SimulationEngine {
 
     public SimulationEngine(List<Vehicle> vehicles, List<Intersection> intersections, MovementEngine movementEngine){
         this.vehicles = vehicles;
-        this.intersections = intersections;
+        this.intersections = new ArrayList<>(intersections);
         this.movementEngine = movementEngine;
         collisionResolver = new CollisionResolver();
 
@@ -29,6 +29,7 @@ public class SimulationEngine {
     }
 
     private void tick(int delta) {
+        vehicles.removeIf(Vehicle::hasDestinationReached);
         allRoads.forEach(Road::sortVehicles);
         intersections.forEach(i -> i.getTrafficLight().update());
         Snapshot snapshot = createSnapshot();
@@ -41,8 +42,6 @@ public class SimulationEngine {
 
         allRoads.forEach(Road::sortVehicles);
 
-
-        AsciiRenderer.render(allRoads, vehicles);
         vehicles.forEach( v -> {
             System.out.printf(
                     "Vehicle %d | Speed: %d | Road %d -> %d | Pos %d | TL = %s \n",
