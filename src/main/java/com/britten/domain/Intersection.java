@@ -43,6 +43,10 @@ public class Intersection {
         outgoingRoads.add(road);
     }
 
+    public void addOutgoingRoads(List<Road> roads){
+        outgoingRoads.addAll(roads);
+    }
+
     private boolean checkForDuplicateRoad(Road road){
         Road existing = outgoingRoads.stream()
                 .filter(r -> r.getTo() == road.getTo())
