@@ -61,16 +61,14 @@ public class MovementEngine {
             return;
         }
 
-        Set<Road> outgoing = road.getTo().getOutgoingRoads();
-        System.out.println(outgoing.isEmpty());
-        if (outgoing.isEmpty()) {
-            vehicle.setNextPosition(road.getLength());
-            vehicle.setNextSpeed(0);
-            vehicle.setNextRoad(road);
+        Road next = vehicle.peekNextRoad();
+
+        if(next == null) {
+            vehicle.getCurrentRoad().removeVehicle(vehicle);
+            vehicle.setCurrentRoad(null);
             return;
         }
-
-        Road next = outgoing.iterator().next();
+        vehicle.advanceToNextRoad();
 
         int remainingDistance = (distance * vehicle.getDefaultSpeed()) - (road.getLength() - vehicle.getPosition());
 

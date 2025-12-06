@@ -1,8 +1,13 @@
 package com.britten.domain;
 
+import java.util.List;
+
 public abstract class Vehicle {
 
     private final int id;
+
+    private List<Road> route;
+    private int routeIndex;
 
     private Road currentRoad;
     private int position;
@@ -19,9 +24,16 @@ public abstract class Vehicle {
         this.id = id;
         this.currentRoad = currentRoad;
         this.speed = speed;
-        this.position = 0;
-        currentRoad.addVehicle(this);
         this.defaultSpeed = defaultSpeed;
+        this.position = 0;
+
+        currentRoad.addVehicle(this);
+    }
+
+    public Vehicle(int id, Road currentRoad, int speed, int defaultSpeed, List<Road> route){
+        this(id,currentRoad,speed,defaultSpeed);
+        this.route = route;
+        this.routeIndex = 0;
     }
 
     public int getId() {
@@ -63,6 +75,23 @@ public abstract class Vehicle {
             throw new IllegalArgumentException("Speed cannot be negative.");
 
         this.speed = speed;
+    }
+
+    public void setRoute(List<Road> route){
+        this.route = route;
+        this.routeIndex = 0;
+    }
+
+    public Road peekNextRoad(){
+        return (routeIndex < route.size()) ? route.get(routeIndex) : null;
+    }
+
+    public void advanceToNextRoad(){
+        routeIndex++;
+    }
+
+    public boolean hasDestinationReached(){
+        return routeIndex >= route.size();
     }
 
     public Road getNextRoad() {
