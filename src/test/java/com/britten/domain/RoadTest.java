@@ -21,6 +21,7 @@ public class RoadTest {
         assertThat(road.getFrom()).isEqualTo(from);
         assertThat(road.getTo()).isEqualTo(to);
         assertThat(road.getLength()).isEqualTo(length);
+        assertThat(road.getVehiclesOnRoad()).isNotNull();
     }
 
     @Test

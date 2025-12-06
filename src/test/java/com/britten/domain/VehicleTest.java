@@ -50,21 +50,6 @@ public class VehicleTest {
     }
 
     @Test
-    void testSetPosition_smallerValue_throwException(){
-        Road road = new Road(
-                new Intersection(1, new TrafficLight(new FixedCycleStrategy(1,1,1))),
-                new Intersection(2,new TrafficLight(new FixedCycleStrategy(1,1,1))),
-                100);
-        Vehicle vehicle = new Car(1, road);
-
-        vehicle.setPosition(10);
-
-        assertThatThrownBy(() -> vehicle.setPosition(5))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("A vehicle is not allowed to drive backwards!");
-    }
-
-    @Test
     void testSetPosition_valueGreaterRoadLength_throwException(){
         Road road = new Road(
                 new Intersection(1, new TrafficLight(new FixedCycleStrategy(1,1,1))),

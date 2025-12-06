@@ -14,27 +14,28 @@ public class DemoGraphFactory {
 
     public static SimulationEngine buildSquareSimulation(){
 
-        Intersection i1 = new Intersection(1, new TrafficLight(new FixedCycleStrategy(5,2,5)));
-        Intersection i2 = new Intersection(2, new TrafficLight(new FixedCycleStrategy(5,2,5)));
-        Intersection i3 = new Intersection(3, new TrafficLight(new FixedCycleStrategy(5,2,5)));
-        Intersection i4 = new Intersection(4, new TrafficLight(new FixedCycleStrategy(5,2,5)));
+        Intersection i1 = new Intersection(1, new TrafficLight(new FixedCycleStrategy(3,1,5)));
+        Intersection i2 = new Intersection(2, new TrafficLight(new FixedCycleStrategy(3,1,5)));
+        Intersection i3 = new Intersection(3, new TrafficLight(new FixedCycleStrategy(3,1,5)));
+        Intersection i4 = new Intersection(4, new TrafficLight(new FixedCycleStrategy(3,1,5)));
 
-        Road r1 = new Road(i1, i2, 7);
-        Road r2 = new Road(i2, i3, 7);
-        Road r3 = new Road(i3, i4, 7);
-        Road r4 = new Road(i4, i1, 7);
+        Road r1 = new Road(i1, i2, 50);
+        Road r2 = new Road(i2, i3, 50);
+        Road r3 = new Road(i3, i4, 50);
+        Road r4 = new Road(i4, i1, 50);
 
         i1.addOutgoingRoad(r1);
         i2.addOutgoingRoad(r2);
         i3.addOutgoingRoad(r3);
         i4.addOutgoingRoad(r4);
 
-
-
-        Car car = new Car(1, r1);
+        Car car1 = new Car(1, r1,1);
+        Car car2 = new Car(2, r2,10);
+        Car car3 = new Car(3, r3,10);
+        Car car4 = new Car(4, r4,5);
 
         return new SimulationEngine(
-                List.of(car),
+                List.of(car1, car2, car3, car4),
                 List.of(i1,i2,i3,i4),
                 new MovementEngine()
         );

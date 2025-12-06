@@ -3,17 +3,25 @@ package com.britten.domain;
 public abstract class Vehicle {
 
     private final int id;
+
     private Road currentRoad;
     private int position;
-    protected double speed;
+    private int speed;
 
-    public Vehicle(int id, Road currentRoad, double speed){
+    private Road nextRoad;
+    private int nextPosition;
+    private int nextSpeed;
+    private final int defaultSpeed;
+
+    public Vehicle(int id, Road currentRoad, int speed, int defaultSpeed){
         if(currentRoad == null)
             throw new IllegalArgumentException("Current road cannot be null!");
         this.id = id;
         this.currentRoad = currentRoad;
         this.speed = speed;
         this.position = 0;
+        currentRoad.addVehicle(this);
+        this.defaultSpeed = defaultSpeed;
     }
 
     public int getId() {
@@ -28,34 +36,66 @@ public abstract class Vehicle {
         return position;
     }
 
-    public double getSpeed(){
+    public int getSpeed(){
         return speed;
     }
 
+    public int getDefaultSpeed(){
+        return defaultSpeed;
+    }
+
     public void setPosition(int position){
-        if(position < this.position)
-            throw new IllegalArgumentException("A vehicle is not allowed to drive backwards!");
         if(position > currentRoad.getLength())
             throw new IllegalArgumentException("Value position is greater than length of current road.");
 
         this.position = position;
     }
 
-    public void setCurrentRoad(Road currentRoad){
-        if(currentRoad == null)
+    public void setCurrentRoad(Road newRoad){
+        if(newRoad == null)
             throw new IllegalArgumentException("Road cannot be null.");
-        this.currentRoad = currentRoad;
+        this.currentRoad = newRoad;
+        this.currentRoad.addVehicle(this);
     }
 
-    public void setSpeed(double speed){
+    public void setSpeed(int speed){
         if(speed < 0)
             throw new IllegalArgumentException("Speed cannot be negative.");
 
         this.speed = speed;
     }
 
+    public Road getNextRoad() {
+        return nextRoad;
+    }
 
+    public void setNextRoad(Road nextRoad) {
+        this.nextRoad = nextRoad;
+    }
 
+    public int getNextPosition() {
+        return nextPosition;
+    }
+
+    public void setNextPosition(int nextPosition) {
+        this.nextPosition = nextPosition;
+    }
+
+    public int getNextSpeed() {
+        return nextSpeed;
+    }
+
+    public void setNextSpeed(int nextSpeed) {
+        this.nextSpeed = nextSpeed;
+    }
+
+    public void restoreSpeed(){
+        this.speed = defaultSpeed;
+    }
+
+    public void resetNextSpeedToDefault() {
+        this.nextSpeed = defaultSpeed;
+    }
 
     @Override
     public String toString() {

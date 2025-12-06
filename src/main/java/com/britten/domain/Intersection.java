@@ -1,6 +1,7 @@
 package com.britten.domain;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -15,7 +16,7 @@ public class Intersection {
             throw new IllegalArgumentException("TrafficLight cannot be null!");
 
         this.id = id;
-        this.outgoingRoads = new HashSet<>();
+        this.outgoingRoads = new LinkedHashSet<>();
         this.trafficLight = trafficLight;
     }
 
