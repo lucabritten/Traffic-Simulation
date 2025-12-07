@@ -1,5 +1,7 @@
 package com.britten.domain;
 
+import com.britten.routing.RoutePlanner;
+
 import java.util.List;
 
 public abstract class Vehicle {
@@ -117,6 +119,16 @@ public abstract class Vehicle {
         this.route = route;
         this.routeIndex = 0;
     }
+
+    public List<Road> getRoute(){
+        return route;
+    }
+
+    public Road getDestination(){
+            return route.getLast();
+    }
+
+    public int getRouteIndex() { return routeIndex; }
 
     public Road peekNextRoad(){
         if (route == null)

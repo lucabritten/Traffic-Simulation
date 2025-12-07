@@ -2,17 +2,25 @@ package com.britten.simulation;
 
 import com.britten.domain.Road;
 import com.britten.domain.Vehicle;
+import com.britten.logging.SimulationEvent;
+import com.britten.logging.SimulationEventPublisher;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class MovementEngine {
 
     private static final int SAFE_DISTANCE = 2;
     private final IntersectionController intersectionController;
+    private SimulationEventPublisher publisher;
 
     public MovementEngine(){
         intersectionController = new IntersectionController();
+    }
+
+    public void setPublisher(SimulationEventPublisher publisher){
+        this.publisher = publisher;
     }
 
     public void computeNext(Vehicle vehicle, Snapshot snapshot, int distance){
@@ -64,10 +72,8 @@ public class MovementEngine {
         Road next = null;
 
         if (vehicle.isRoutingEnabled()) {
-            // routing mode: use vehicle's planned route (may be null if route finished)
             next = vehicle.peekNextRoad();
         } else {
-            // non-routing mode: pick the first outgoing road if any, otherwise null (dead-end)
             Set<Road> outgoing = road.getTo().getOutgoingRoads();
             if (outgoing == null || outgoing.isEmpty()) {
                 next = null;
@@ -76,10 +82,27 @@ public class MovementEngine {
             }
         }
 
-        if(next == null) {
-            vehicle.getCurrentRoad().removeVehicle(vehicle);
-            vehicle.setSpeed(0);
-            System.out.println("Vehicle: " + vehicle + " arrived!");
+        if (next == null || (vehicle.isRoutingEnabled() && vehicle.getDestination().equals(vehicle.getCurrentRoad()))) {
+            vehicle.setNextRoad(road);
+            vehicle.setNextPosition(road.getLength());
+            vehicle.setNextSpeed(0);
+
+            vehicle.setRoute(null);
+            vehicle.advanceToNextRoad();
+
+            if (publisher != null) {
+                publisher.publish(
+                        new SimulationEvent(
+                                "VEHICLE_ARRIVED",
+                                snapshot.getTick(),
+                                Map.of(
+                                        "vehicleId", vehicle.getId(),
+                                        "road", road,
+                                        "destination", road.getTo().getId()
+                                )
+                        )
+                );
+            }
             return;
         }
         vehicle.advanceToNextRoad();

@@ -38,14 +38,16 @@ public class SimulationEngine {
             intersection.getTrafficLight().setPublisher(this::publish);
         });
 
+        movementEngine.setPublisher(this::publish);
+
         listeners = new ArrayList<>();
     }
 
     private void tick(int delta, int tick) {
-        vehicles.removeIf(Vehicle::hasDestinationReached);
+
         allRoads.forEach(Road::sortVehicles);
         intersections.forEach(i -> i.getTrafficLight().update(tick));
-        Snapshot snapshot = createSnapshot();
+        Snapshot snapshot = createSnapshot(tick);
         vehicles.forEach(v ->  movementEngine.computeNext(v, snapshot, delta));
 
        // vehicles.forEach(v -> System.out.println("before collisionResolver call: np: " + v.getNextPosition() + ", ap: " + v.getPosition()));
@@ -54,6 +56,8 @@ public class SimulationEngine {
         applyNextStates(tick);
 
         allRoads.forEach(Road::sortVehicles);
+        vehicles.removeIf(Vehicle::hasDestinationReached);
+
 
         vehicles.forEach( v -> {
             System.out.printf(
@@ -114,7 +118,7 @@ public class SimulationEngine {
         }
     }
 
-    private Snapshot createSnapshot(){
+    private Snapshot createSnapshot(int tick){
         Map<Road, List<Vehicle>> roadCopy = new HashMap<>();
         Map<Road,String> trafficCopy = new HashMap<>();
 
@@ -124,7 +128,7 @@ public class SimulationEngine {
                 trafficCopy.put(road,road.getTo().getTrafficLight().getState().name());
             }
         }
-        return new Snapshot(roadCopy, trafficCopy);
+        return new Snapshot(roadCopy, trafficCopy, tick);
     }
 
     public void addListener(SimulationEventListener listener){
