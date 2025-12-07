@@ -1,0 +1,35 @@
+name: SmartCity Traffic – CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Build & Test with Maven
+      run: mvn -B clean verify --file pom.xml
+      # "verify" ensures:
+      # - compile
+      # - test-compile
+      # - run ALL tests (unit + integration, if you define them)
+      # - package
+      # - fail build if ANY test fails
+
+    # Optional: Upload Maven dependency graph (Dependabot integration)
+    - name: Update dependency graph
+      uses: advanced-security/maven-dependency-submission-action@v3
