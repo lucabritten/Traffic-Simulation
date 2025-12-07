@@ -29,7 +29,3 @@ jobs:
       # - run ALL tests (unit + integration, if you define them)
       # - package
       # - fail build if ANY test fails
-
-    # Optional: Upload Maven dependency graph (Dependabot integration)
-    - name: Update dependency graph
-      uses: advanced-security/maven-dependency-submission-action@v3
