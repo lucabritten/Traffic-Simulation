@@ -1,12 +1,16 @@
 package com.britten.control;
 
 import com.britten.domain.TrafficLight;
+import com.britten.logging.SimulationEventListener;
+import com.britten.logging.SimulationEventPublisher;
 
 public class FixedCycleStrategy implements TrafficLightStrategy {
 
     private final int greenDuration;
     private final int yellowDuration;
     private final int redDuration;
+
+    private SimulationEventPublisher publisher;
 
     public FixedCycleStrategy(int greenDuration, int yellowDuration, int redDuration){
         if(greenDuration <= 0 || yellowDuration <= 0 || redDuration < 0)
@@ -15,6 +19,10 @@ public class FixedCycleStrategy implements TrafficLightStrategy {
         this.greenDuration = greenDuration;
         this.yellowDuration = yellowDuration;
         this.redDuration = redDuration;
+    }
+
+    public void setPublisher(SimulationEventPublisher publisher){
+        this.publisher = publisher;
     }
 
     @Override

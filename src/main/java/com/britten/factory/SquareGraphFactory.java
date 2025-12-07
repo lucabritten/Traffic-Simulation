@@ -8,7 +8,7 @@ import com.britten.routing.RoutePlanner;
 
 import java.util.List;
 
-public class DemoGraphFactory implements GraphFactory{
+public class SquareGraphFactory implements GraphFactory{
 
     private List<Intersection> intersections;
     private List<Road> roads;

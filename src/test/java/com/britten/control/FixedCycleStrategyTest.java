@@ -31,12 +31,12 @@ public class FixedCycleStrategyTest {
         int counter = 0;
         while(counter < redDuration - 1){
             counter++;
-            trafficLight.update();
+            trafficLight.update(counter);
         }
 
         assertThat(trafficLight.getState()).isEqualTo(TrafficLight.State.RED);
 
-        trafficLight.update();
+        trafficLight.update(++counter);
 
         assertThat(trafficLight.getState()).isEqualTo(TrafficLight.State.GREEN);
     }
@@ -52,12 +52,12 @@ public class FixedCycleStrategyTest {
         int counter = 0;
         while(counter < redDuration + greenDuration - 1){
             counter++;
-            trafficLight.update();
+            trafficLight.update(counter);
         }
 
         assertThat(trafficLight.getState()).isEqualTo(TrafficLight.State.GREEN);
 
-        trafficLight.update();
+        trafficLight.update(++counter);
 
         assertThat(trafficLight.getState()).isEqualTo(TrafficLight.State.YELLOW);
     }
@@ -73,12 +73,12 @@ public class FixedCycleStrategyTest {
         int counter = 0;
         while(counter < redDuration + greenDuration + yellowDuration - 1){
             counter++;
-            trafficLight.update();
+            trafficLight.update(counter);
         }
 
         assertThat(trafficLight.getState()).isEqualTo(TrafficLight.State.YELLOW);
 
-        trafficLight.update();
+        trafficLight.update(++counter);
 
         assertThat(trafficLight.getState()).isEqualTo(TrafficLight.State.RED);
     }

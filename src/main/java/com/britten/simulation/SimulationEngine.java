@@ -3,6 +3,8 @@ package com.britten.simulation;
 import com.britten.domain.Intersection;
 import com.britten.domain.Road;
 import com.britten.domain.Vehicle;
+import com.britten.logging.SimulationEvent;
+import com.britten.logging.SimulationEventListener;
 import com.britten.ui.AsciiRenderer;
 
 import java.util.ArrayList;
@@ -18,6 +20,8 @@ public class SimulationEngine {
     private List<Road> allRoads;
     private CollisionResolver collisionResolver;
 
+    private final List<SimulationEventListener> listeners;
+
     /**
      * vehicles and intersections may be immutable;
      * SimulationEngine will internally copy them into mutable lists.
@@ -29,20 +33,25 @@ public class SimulationEngine {
         collisionResolver = new CollisionResolver();
 
         allRoads = new ArrayList<>();
-        intersections.forEach(intersection -> allRoads.addAll(intersection.getOutgoingRoads()));
+        intersections.forEach(intersection -> {
+            allRoads.addAll(intersection.getOutgoingRoads());
+            intersection.getTrafficLight().setPublisher(this::publish);
+        });
+
+        listeners = new ArrayList<>();
     }
 
-    private void tick(int delta) {
+    private void tick(int delta, int tick) {
         vehicles.removeIf(Vehicle::hasDestinationReached);
         allRoads.forEach(Road::sortVehicles);
-        intersections.forEach(i -> i.getTrafficLight().update());
+        intersections.forEach(i -> i.getTrafficLight().update(tick));
         Snapshot snapshot = createSnapshot();
         vehicles.forEach(v ->  movementEngine.computeNext(v, snapshot, delta));
 
        // vehicles.forEach(v -> System.out.println("before collisionResolver call: np: " + v.getNextPosition() + ", ap: " + v.getPosition()));
         collisionResolver.resolve(snapshot, vehicles);
 
-        applyNextStates();
+        applyNextStates(tick);
 
         allRoads.forEach(Road::sortVehicles);
 
@@ -60,12 +69,12 @@ public class SimulationEngine {
 
     public void runForTicks(int totalTicks){
         for(int i = 0; i < totalTicks; i++){
-            tick(1);
+            tick(1, i);
             System.out.println("Tick " + i);
         }
     }
 
-    public void applyNextStates() {
+    public void applyNextStates(int tick) {
         for(Vehicle vehicle : vehicles){
             Road oldRoad = vehicle.getCurrentRoad();
             Road newRoad = vehicle.getNextRoad();
@@ -77,6 +86,16 @@ public class SimulationEngine {
             }
 
             if(newRoad != oldRoad){
+
+                publish(new SimulationEvent(
+                        "VEHICLE_ENTERED_ROAD",
+                        tick,
+                        Map.of(
+                                "vehicleId", vehicle.getId(),
+                                "fromRoad", oldRoad,
+                                "toRoad", newRoad
+                        )
+                ));
                 oldRoad.removeVehicle(vehicle);
                 vehicle.setCurrentRoad(newRoad);
             }
@@ -106,5 +125,13 @@ public class SimulationEngine {
             }
         }
         return new Snapshot(roadCopy, trafficCopy);
+    }
+
+    public void addListener(SimulationEventListener listener){
+        listeners.add(listener);
+    }
+
+    public void publish(SimulationEvent event){
+        listeners.forEach(l -> l.onEvent(event));
     }
 }

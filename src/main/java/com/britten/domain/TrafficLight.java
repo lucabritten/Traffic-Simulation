@@ -1,6 +1,10 @@
 package com.britten.domain;
 
 import com.britten.control.TrafficLightStrategy;
+import com.britten.logging.SimulationEvent;
+import com.britten.logging.SimulationEventPublisher;
+
+import java.util.Map;
 
 public class TrafficLight {
 
@@ -11,6 +15,7 @@ public class TrafficLight {
     private State state;
     private int currentTick;
     private TrafficLightStrategy strategy;
+    private SimulationEventPublisher publisher;
 
     public TrafficLight(TrafficLightStrategy strategy){
         if(strategy == null)
@@ -19,6 +24,10 @@ public class TrafficLight {
         state = State.RED;
         this.strategy = strategy;
         currentTick = 0;
+    }
+
+    public void setPublisher(SimulationEventPublisher publisher){
+        this.publisher = publisher;
     }
 
     public State getState() {
@@ -47,9 +56,25 @@ public class TrafficLight {
         return this.strategy;
     }
 
-    public void update(){
+    public void update(int tick){
+        TrafficLight.State oldState = state;
+
         currentTick++;
         state = strategy.nextState(this);
+
+        if (publisher != null && oldState != state) {
+            publisher.publish(
+                    new SimulationEvent(
+                            "TRAFFICLIGHT_SWITCHED",
+                            tick,
+                            Map.of(
+                                    "intersectionId", this.hashCode(),
+                                    "from", oldState,
+                                    "to", state
+                            )
+                    )
+            );
+        }
     }
 
     @Override
