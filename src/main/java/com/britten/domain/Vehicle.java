@@ -5,28 +5,32 @@ import java.util.List;
 public abstract class Vehicle {
 
     private final int id;
-    private boolean routingEnabled = false;
 
     private List<Road> route;
     private int routeIndex;
+    private boolean routingEnabled;
 
     private Road currentRoad;
     private int position;
     private int speed;
+    private final int defaultSpeed;
 
     private Road nextRoad;
     private int nextPosition;
     private int nextSpeed;
-    private final int defaultSpeed;
 
     public Vehicle(int id, Road currentRoad, int speed, int defaultSpeed){
         if(currentRoad == null)
             throw new IllegalArgumentException("Current road cannot be null!");
+
+        if(speed <= 0 || defaultSpeed <= 0)
+            throw new IllegalArgumentException("Speed and default speed cannot be negative or zero!");
         this.id = id;
         this.currentRoad = currentRoad;
         this.speed = speed;
         this.defaultSpeed = defaultSpeed;
         this.position = 0;
+        this.routingEnabled = false;
 
         currentRoad.addVehicle(this);
     }
@@ -39,6 +43,9 @@ public abstract class Vehicle {
 
     public int getId() {
         return id;
+    }
+    public boolean isRoutingEnabled(){
+        return routingEnabled;
     }
 
     public Road getCurrentRoad() {
@@ -55,6 +62,34 @@ public abstract class Vehicle {
 
     public int getDefaultSpeed(){
         return defaultSpeed;
+    }
+
+    public Road getNextRoad() {
+        return nextRoad;
+    }
+
+    public void setNextRoad(Road nextRoad) {
+        this.nextRoad = nextRoad;
+    }
+
+    public int getNextPosition() {
+        return nextPosition;
+    }
+
+    public void setNextPosition(int nextPosition) {
+        if(nextPosition < 0 )
+            throw new IllegalArgumentException("Next position cannot be negative or greater than next road length.");
+        this.nextPosition = nextPosition;
+    }
+
+    public int getNextSpeed() {
+        return nextSpeed;
+    }
+
+    public void setNextSpeed(int nextSpeed) {
+        if(nextSpeed < 0)
+            throw new IllegalArgumentException("Next speed cannot be negative.");
+        this.nextSpeed = nextSpeed;
     }
 
     public void setPosition(int position){
@@ -84,7 +119,8 @@ public abstract class Vehicle {
     }
 
     public Road peekNextRoad(){
-        if (route == null) return null;
+        if (route == null)
+            return null;
         return (routeIndex < route.size()) ? route.get(routeIndex) : null;
     }
 
@@ -101,40 +137,12 @@ public abstract class Vehicle {
         return routeIndex >= route.size();
     }
 
-    public Road getNextRoad() {
-        return nextRoad;
-    }
-
-    public void setNextRoad(Road nextRoad) {
-        this.nextRoad = nextRoad;
-    }
-
-    public int getNextPosition() {
-        return nextPosition;
-    }
-
-    public void setNextPosition(int nextPosition) {
-        this.nextPosition = nextPosition;
-    }
-
-    public int getNextSpeed() {
-        return nextSpeed;
-    }
-
-    public void setNextSpeed(int nextSpeed) {
-        this.nextSpeed = nextSpeed;
-    }
-
     public void restoreSpeed(){
         this.speed = defaultSpeed;
     }
 
     public void resetNextSpeedToDefault() {
         this.nextSpeed = defaultSpeed;
-    }
-
-    public boolean isRoutingEnabled(){
-        return routingEnabled;
     }
 
     public void enableRouting(){

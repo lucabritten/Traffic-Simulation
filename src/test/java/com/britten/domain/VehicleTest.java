@@ -3,8 +3,9 @@ package com.britten.domain;
 import com.britten.control.FixedCycleStrategy;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.*;
 
 public class VehicleTest {
 
@@ -37,11 +38,25 @@ public class VehicleTest {
     }
 
     @Test
+    void testInitializeVehicle_negativeSpeed_throwsException(){
+        Road road = new Road(
+                new Intersection(1, new TrafficLight(new FixedCycleStrategy(1,1,1))),
+                new Intersection(2,new TrafficLight(new FixedCycleStrategy(1,1,1))),
+                100
+        );
+
+        assertThatThrownBy(() -> new Car(1, road,-1))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Speed and default speed cannot be negative or zero!");
+    }
+
+    @Test
     void testSetPosition_validValue_updatePosition(){
         Road road = new Road(
                 new Intersection(1, new TrafficLight(new FixedCycleStrategy(1,1,1))),
                 new Intersection(2,new TrafficLight(new FixedCycleStrategy(1,1,1))),
-                100);
+                100)
+                ;
         Vehicle vehicle = new Car(1, road);
 
         vehicle.setPosition(5);
@@ -107,6 +122,74 @@ public class VehicleTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Speed cannot be negative.");
     }
+
+    @Test
+    void testSetNextPosition_negativeValue_throwsException(){
+        Road road = new Road(
+                new Intersection(1, new TrafficLight(new FixedCycleStrategy(1,1,1))),
+                new Intersection(2,new TrafficLight(new FixedCycleStrategy(1,1,1))),
+                100);
+        Vehicle vehicle = new Car(1, road);
+
+        assertThatThrownBy(() -> vehicle.setNextPosition(-1))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Next position cannot be negative or greater than next road length.");
+    }
+
+    @Test
+    void testSetNextSpeed_negativeValue_throwsException(){
+        Road road = new Road(
+                new Intersection(1, new TrafficLight(new FixedCycleStrategy(1,1,1))),
+                new Intersection(2,new TrafficLight(new FixedCycleStrategy(1,1,1))),
+                100);
+        Vehicle vehicle = new Car(1, road);
+
+        assertThatThrownBy(() -> vehicle.setNextSpeed(-1))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Next speed cannot be negative.");
+    }
+
+    @Test
+    void testEnableRouting_noRouteSet_throwsException(){
+        Road road = new Road(
+                new Intersection(1, new TrafficLight(new FixedCycleStrategy(1,1,1))),
+                new Intersection(2,new TrafficLight(new FixedCycleStrategy(1,1,1))),
+                100);
+        Vehicle vehicle = new Car(1, road);
+
+        assertThatThrownBy(vehicle::enableRouting)
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Cannot enable routing without a route set.");
+    }
+
+    @Test
+    void testEnableRouting_emptyRoute_throwsException(){
+        Road road = new Road(
+                new Intersection(1, new TrafficLight(new FixedCycleStrategy(1,1,1))),
+                new Intersection(2,new TrafficLight(new FixedCycleStrategy(1,1,1))),
+                100);
+        Vehicle vehicle = new Car(1, road);
+
+        vehicle.setRoute(List.of());
+
+        assertThatThrownBy(vehicle::enableRouting)
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Cannot enable routing without a route set.");
+    }
+
+    @Test
+    void testEnableRouting_validRoute_throwsNoException(){
+        Road road = new Road(
+                new Intersection(1, new TrafficLight(new FixedCycleStrategy(1,1,1))),
+                new Intersection(2,new TrafficLight(new FixedCycleStrategy(1,1,1))),
+                100);
+        Vehicle vehicle = new Car(1, road);
+
+        vehicle.setRoute(List.of(road));
+
+        assertThatNoException().isThrownBy(vehicle::enableRouting);
+    }
 }
+
 
 
