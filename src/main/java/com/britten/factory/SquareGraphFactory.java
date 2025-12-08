@@ -1,12 +1,15 @@
 package com.britten.factory;
 
 import com.britten.control.FixedCycleStrategy;
+import com.britten.control.Phase;
+import com.britten.control.PhaseController;
 import com.britten.domain.*;
 import com.britten.routing.DijkstraRoutePlanner;
 import com.britten.routing.RoadNetwork;
 import com.britten.routing.RoutePlanner;
 
 import java.util.List;
+import java.util.Set;
 
 public class SquareGraphFactory implements GraphFactory{
 
@@ -26,10 +29,37 @@ public class SquareGraphFactory implements GraphFactory{
         Road r3 = new Road(i3, i4, 50);
         Road r4 = new Road(i4, i1, 50);
 
+        // outgoing
         i1.addOutgoingRoad(r1);
         i2.addOutgoingRoad(r2);
         i3.addOutgoingRoad(r3);
         i4.addOutgoingRoad(r4);
+
+        // incoming & per-road traffic lights
+        i2.addIncomingRoad(r1, new TrafficLight(new FixedCycleStrategy(3,1,5)));
+        i3.addIncomingRoad(r2, new TrafficLight(new FixedCycleStrategy(3,1,5)));
+        i4.addIncomingRoad(r3, new TrafficLight(new FixedCycleStrategy(3,1,5)));
+        i1.addIncomingRoad(r4, new TrafficLight(new FixedCycleStrategy(3,1,5)));
+
+        // ========== NEW: PhaseController Setup ==========
+        Phase nsPhase = new Phase(
+                Set.of(r1, r3),   // North–South roads
+                5                 // duration
+        );
+        Phase ewPhase = new Phase(
+                Set.of(r2, r4),   // East–West roads
+                5
+        );
+
+        PhaseController controller1 = new PhaseController(List.of(nsPhase, ewPhase));
+        PhaseController controller2 = new PhaseController(List.of(nsPhase, ewPhase));
+        PhaseController controller3 = new PhaseController(List.of(nsPhase, ewPhase));
+        PhaseController controller4 = new PhaseController(List.of(nsPhase, ewPhase));
+
+        i1.setController(controller1);
+        i2.setController(controller2);
+        i3.setController(controller3);
+        i4.setController(controller4);
 
         intersections = List.of(i1,i2,i3,i4);
         roads = List.of(r1,r2,r3,r4);

@@ -1,14 +1,16 @@
 package com.britten.domain;
 
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import com.britten.control.PhaseController;
+
+import java.util.*;
 
 public class Intersection {
 
     private int id;
     private Set<Road> outgoingRoads;
+    private Set<Road> incomingRoads;
+    Map<Road, TrafficLight> entryLights;
+    PhaseController controller;
     private TrafficLight trafficLight;
 
     public Intersection(int id, TrafficLight trafficLight) {
@@ -17,6 +19,8 @@ public class Intersection {
 
         this.id = id;
         this.outgoingRoads = new LinkedHashSet<>();
+        this.incomingRoads = new LinkedHashSet<>();
+        entryLights = new HashMap<>();
         this.trafficLight = trafficLight;
     }
 
@@ -30,6 +34,10 @@ public class Intersection {
 
     public TrafficLight getTrafficLight() {
         return trafficLight;
+    }
+
+    public TrafficLight getLightFor(Road road){
+        return entryLights.get(road);
     }
 
     public void addOutgoingRoad(Road road){
@@ -47,6 +55,26 @@ public class Intersection {
         outgoingRoads.addAll(roads);
     }
 
+    public void addIncomingRoad(Road road, TrafficLight light){
+        incomingRoads.add(road);
+        entryLights.put(road, light);
+    }
+
+    public Map<Road, TrafficLight> getEntryLights(){
+        return entryLights;
+    }
+
+    public Set<Road> getIncomingRoads() {
+        return incomingRoads;
+    }
+
+    public PhaseController getController() {
+        return controller;
+    }
+
+    public void setController(PhaseController controller) {
+        this.controller = controller;
+    }
     private boolean checkForDuplicateRoad(Road road){
         Road existing = outgoingRoads.stream()
                 .filter(r -> r.getTo() == road.getTo())

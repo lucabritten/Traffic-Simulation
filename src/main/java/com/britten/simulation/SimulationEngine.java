@@ -2,6 +2,7 @@ package com.britten.simulation;
 
 import com.britten.domain.Intersection;
 import com.britten.domain.Road;
+import com.britten.domain.TrafficLight;
 import com.britten.domain.Vehicle;
 import com.britten.logging.SimulationEvent;
 import com.britten.logging.SimulationEventListener;
@@ -35,7 +36,11 @@ public class SimulationEngine {
         allRoads = new ArrayList<>();
         intersections.forEach(intersection -> {
             allRoads.addAll(intersection.getOutgoingRoads());
-            intersection.getTrafficLight().setPublisher(this::publish);
+            // attach publisher to each per-road entry light if present
+            var entryLights = intersection.getEntryLights();
+            if (entryLights != null) {
+                entryLights.values().forEach(l -> { if (l != null) l.setPublisher(this::publish); });
+            }
         });
 
         movementEngine.setPublisher(this::publish);
@@ -44,9 +49,14 @@ public class SimulationEngine {
     }
 
     private void tick(int delta, int tick) {
-
         allRoads.forEach(Road::sortVehicles);
-        intersections.forEach(i -> i.getTrafficLight().update(tick));
+        // update intersection phase controllers and apply current phases
+        intersections.forEach(i -> {
+            if (i.getController() != null) {
+                i.getController().update();
+                i.getController().applyPhase(i);
+            }
+        });
         Snapshot snapshot = createSnapshot(tick);
         vehicles.forEach(v ->  movementEngine.computeNext(v, snapshot, delta));
 
@@ -59,15 +69,23 @@ public class SimulationEngine {
         vehicles.removeIf(Vehicle::hasDestinationReached);
 
 
-        vehicles.forEach( v -> {
+        vehicles.forEach(v -> {
+            var road = v.getCurrentRoad();
+            var intersection = road.getTo();
+            var light = intersection.getLightFor(road);
+            var state = (light == null) ? "NONE" : light.getState().name();
+
             System.out.printf(
-                    "Vehicle %d | Speed: %d | Road %d -> %d | Pos %d | TL = %s \n",
+                    "Vehicle %d | Speed: %d | Road %d -> %d | Pos %d | TL[%d <- %s] = %s%n",
                     v.getId(),
                     v.getSpeed(),
-                    v.getCurrentRoad().getFrom().getId(),
-                    v.getCurrentRoad().getTo().getId(),
+                    road.getFrom().getId(),
+                    road.getTo().getId(),
                     v.getPosition(),
-                    v.getCurrentRoad().getTo().getTrafficLight().getState());
+                    intersection.getId(),
+                    road,
+                    state
+            );
         });
     }
 
@@ -121,11 +139,15 @@ public class SimulationEngine {
     private Snapshot createSnapshot(int tick){
         Map<Road, List<Vehicle>> roadCopy = new HashMap<>();
         Map<Road,String> trafficCopy = new HashMap<>();
+        Map<Road, TrafficLight> trafficLightMap = new HashMap<>();
 
         for(Intersection intersection : intersections){
-            for (Road road : intersection.getOutgoingRoads()){
+            // snapshot per incoming road -> traffic light mapping
+            for (Road road : intersection.getIncomingRoads()){
                 roadCopy.put(road, new ArrayList<>(road.getVehiclesOnRoad()));
-                trafficCopy.put(road,road.getTo().getTrafficLight().getState().name());
+                TrafficLight light = intersection.getLightFor(road);
+                trafficCopy.put(road, (light == null) ? "RED" : light.getState().name());
+                trafficLightMap.put(road, light);
             }
         }
         return new Snapshot(roadCopy, trafficCopy, tick);

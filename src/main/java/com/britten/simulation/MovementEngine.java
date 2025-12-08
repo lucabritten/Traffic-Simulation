@@ -97,8 +97,8 @@ public class MovementEngine {
                                 snapshot.getTick(),
                                 Map.of(
                                         "vehicleId", vehicle.getId(),
-                                        "road", road,
-                                        "destination", road.getTo().getId()
+                                        "roadId", road,
+                                        "destinationId", road.getTo().getId()
                                 )
                         )
                 );

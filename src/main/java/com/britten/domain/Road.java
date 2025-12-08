@@ -25,6 +25,7 @@ public class Road {
         return vehiclesOnRoad;
     }
 
+
     public void addVehicle(Vehicle vehicle){
         if(!vehiclesOnRoad.contains(vehicle)) {
             vehiclesOnRoad.add(vehicle);
