@@ -9,6 +9,7 @@ import com.britten.routing.RoadNetwork;
 import com.britten.routing.RoutePlanner;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class SquareGraphFactory implements GraphFactory{
@@ -18,16 +19,20 @@ public class SquareGraphFactory implements GraphFactory{
 
     @Override
     public RoadNetwork buildNetwork() {
-
-        Intersection i1 = new Intersection(1, new TrafficLight(new FixedCycleStrategy(3,1,5)));
-        Intersection i2 = new Intersection(2, new TrafficLight(new FixedCycleStrategy(3,1,5)));
-        Intersection i3 = new Intersection(3, new TrafficLight(new FixedCycleStrategy(3,1,5)));
-        Intersection i4 = new Intersection(4, new TrafficLight(new FixedCycleStrategy(3,1,5)));
+        Intersection i1 = new Intersection(1);
+        Intersection i2 = new Intersection(2);
+        Intersection i3 = new Intersection(3);
+        Intersection i4 = new Intersection(4);
 
         Road r1 = new Road(i1, i2, 50);
         Road r2 = new Road(i2, i3, 50);
         Road r3 = new Road(i3, i4, 50);
         Road r4 = new Road(i4, i1, 50);
+
+        TrafficLight t1 = new TrafficLight(1,new FixedCycleStrategy(3,1,5));
+        TrafficLight t2 = new TrafficLight(2,new FixedCycleStrategy(3,1,5));
+        TrafficLight t3 = new TrafficLight(3,new FixedCycleStrategy(3,1,5));
+        TrafficLight t4 = new TrafficLight(4, new FixedCycleStrategy(3,1,5));
 
         // outgoing
         i1.addOutgoingRoad(r1);
@@ -36,10 +41,10 @@ public class SquareGraphFactory implements GraphFactory{
         i4.addOutgoingRoad(r4);
 
         // incoming & per-road traffic lights
-        i2.addIncomingRoad(r1, new TrafficLight(new FixedCycleStrategy(3,1,5)));
-        i3.addIncomingRoad(r2, new TrafficLight(new FixedCycleStrategy(3,1,5)));
-        i4.addIncomingRoad(r3, new TrafficLight(new FixedCycleStrategy(3,1,5)));
-        i1.addIncomingRoad(r4, new TrafficLight(new FixedCycleStrategy(3,1,5)));
+        i2.addIncomingRoad(r1, t1);
+        i3.addIncomingRoad(r2, t2);
+        i4.addIncomingRoad(r3, t3);
+        i1.addIncomingRoad(r4, t4);
 
         // ========== NEW: PhaseController Setup ==========
         Phase nsPhase = new Phase(

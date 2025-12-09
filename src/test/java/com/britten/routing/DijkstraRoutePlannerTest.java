@@ -22,15 +22,14 @@ public class DijkstraRoutePlannerTest {
     @BeforeEach
     void setUp(){
         planner = new DijkstraRoutePlanner();
-        TrafficLight light = new TrafficLight(new FixedCycleStrategy(2,2,2));
 
-        i1 = new Intersection(1, light);
-        i2 = new Intersection(2, light);
-        i3 = new Intersection(3, light);
-        i4 = new Intersection(4, light);
-        i5 = new Intersection(5, light);
-        i6 = new Intersection(6, light);
-        i99 = new Intersection(99, light); //unreachable intersection
+        i1 = new Intersection(1);
+        i2 = new Intersection(2);
+        i3 = new Intersection(3);
+        i4 = new Intersection(4);
+        i5 = new Intersection(5);
+        i6 = new Intersection(6);
+        i99 = new Intersection(99); //unreachable intersection
 
         r12 = new Road(i1, i2, 20);
         r14 = new Road(i1, i4, 80);

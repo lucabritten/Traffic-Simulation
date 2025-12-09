@@ -11,35 +11,21 @@ public class IntersectionTest {
     @Test
     void testInitializeObjectWithValidArgs(){
         int id = 1;
-        TrafficLight trafficLight = new TrafficLight(new FixedCycleStrategy(1,2,1));
 
-        Intersection intersection = new Intersection(id,trafficLight);
+        Intersection intersection = new Intersection(id);
         assertThat(intersection).isNotNull();
 
         assertThat(intersection.getId()).isEqualTo(id);
-        assertThat(intersection.getTrafficLight()).isEqualTo(trafficLight);
         assertThat(intersection.getOutgoingRoads()).isNotNull();
-    }
-
-    @Test
-    void testInitializeObjectWithInvalidArgs(){
-        int id = 1;
-        TrafficLight trafficLight = null;
-
-        assertThatThrownBy(() -> new Intersection(id, trafficLight))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("TrafficLight cannot be null!");
     }
 
     @Test
     void testAddRoadWithValidArg(){
         int id1 = 1;
-        TrafficLight trafficLight1 = new TrafficLight(new FixedCycleStrategy(1,2,1));
-        Intersection intersection1 = new Intersection(id1,trafficLight1);
+        Intersection intersection1 = new Intersection(id1);
 
         int id2 = 2;
-        TrafficLight trafficLight2 = new TrafficLight(new FixedCycleStrategy(1,2,1));
-        Intersection intersection2 = new Intersection(id2,trafficLight2);
+        Intersection intersection2 = new Intersection(id2);
 
         Road road = new Road(intersection1,intersection2,100);
 
@@ -52,8 +38,7 @@ public class IntersectionTest {
     @Test
     void testAddRoadWithNullRoad(){
         int id1 = 1;
-        TrafficLight trafficLight1 = new TrafficLight(new FixedCycleStrategy(1,2,1));
-        Intersection intersection1 = new Intersection(id1,trafficLight1);
+        Intersection intersection1 = new Intersection(id1);
 
         assertThatThrownBy(() -> intersection1.addOutgoingRoad(null))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -63,12 +48,10 @@ public class IntersectionTest {
     @Test
     void testAddDuplicateRoadThrowsException(){
         int id1 = 1;
-        TrafficLight trafficLight1 = new TrafficLight(new FixedCycleStrategy(1,2,1));
-        Intersection intersection1 = new Intersection(id1,trafficLight1);
+        Intersection intersection1 = new Intersection(id1);
 
         int id2 = 2;
-        TrafficLight trafficLight2 = new TrafficLight(new FixedCycleStrategy(1,2,1));
-        Intersection intersection2 = new Intersection(id2,trafficLight2);
+        Intersection intersection2 = new Intersection(id2);
 
         Road road1 = new Road(intersection1,intersection2,100);
         Road road2 = new Road(intersection1,intersection2,100);
@@ -83,12 +66,10 @@ public class IntersectionTest {
     @Test
     void testAddRoadThatDoesNotStartAddGivenIntersection(){
         int id1 = 1;
-        TrafficLight trafficLight1 = new TrafficLight(new FixedCycleStrategy(1,2,1));
-        Intersection intersection1 = new Intersection(id1,trafficLight1);
+        Intersection intersection1 = new Intersection(id1);
 
         int id2 = 2;
-        TrafficLight trafficLight2 = new TrafficLight(new FixedCycleStrategy(1,2,1));
-        Intersection intersection2 = new Intersection(id2,trafficLight2);
+        Intersection intersection2 = new Intersection(id2);
 
         Road road = new Road(intersection2,intersection1,100);
 

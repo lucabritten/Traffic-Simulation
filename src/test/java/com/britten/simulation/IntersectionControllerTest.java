@@ -24,8 +24,8 @@ public class IntersectionControllerTest {
     void setup() {
         controller = new IntersectionController();
 
-        fromIntersection = new Intersection(1, new TrafficLight(new FixedCycleStrategy(2,2,2)));
-        toIntersection = new Intersection(2, new TrafficLight(new FixedCycleStrategy(2,2,2)));
+        fromIntersection = new Intersection(1);
+        toIntersection = new Intersection(2);
 
         road = new Road(fromIntersection, toIntersection, 100);
 

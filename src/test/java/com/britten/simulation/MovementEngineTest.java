@@ -22,8 +22,8 @@ public class MovementEngineTest {
     void setup() {
         engine = new MovementEngine();
 
-        i1 = new Intersection(1, new TrafficLight(new FixedCycleStrategy(2,2,2)));
-        i2 = new Intersection(2, new TrafficLight(new FixedCycleStrategy(2,2,2)));
+        i1 = new Intersection(1);
+        i2 = new Intersection(2);
 
         road = new Road(i1, i2, 100);
 

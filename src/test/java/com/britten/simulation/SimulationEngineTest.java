@@ -15,7 +15,7 @@ public class SimulationEngineTest {
     @Test
     void engineStoresMutableVehicleList() throws Exception{
 
-        Intersection i1 = new Intersection(1, new TrafficLight(new FixedCycleStrategy(3,1,5)));
+        Intersection i1 = new Intersection(1);
 
         SimulationEngine engine = new SimulationEngine(
                 List.of(new Car(1, new Road(i1, i1, 10), 1)),

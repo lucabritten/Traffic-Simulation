@@ -8,8 +8,8 @@ public class Phase {
     Set<Road> greenRoads;
     int duration;
 
-    public Phase(Set phases, int duration){
-        this.greenRoads = phases;
+    public Phase(Set greenRoads, int duration){
+        this.greenRoads = greenRoads;
         this.duration = duration;
     }
 }

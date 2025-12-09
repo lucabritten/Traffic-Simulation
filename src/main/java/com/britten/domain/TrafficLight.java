@@ -11,19 +11,24 @@ public class TrafficLight {
     public enum State {
         RED, YELLOW, GREEN
     }
-
+    private int id;
     private State state;
     private int currentTick;
     private TrafficLightStrategy strategy;
     private SimulationEventPublisher publisher;
 
-    public TrafficLight(TrafficLightStrategy strategy){
+    public TrafficLight(int id,TrafficLightStrategy strategy){
         if(strategy == null)
             throw new IllegalArgumentException("Strategy is not allowed to be null.");
 
+        this.id = id;
         state = State.RED;
         this.strategy = strategy;
         currentTick = 0;
+    }
+
+    public int getId(){
+        return id;
     }
 
     public void setPublisher(SimulationEventPublisher publisher){

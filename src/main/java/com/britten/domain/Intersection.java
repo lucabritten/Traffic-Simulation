@@ -11,17 +11,12 @@ public class Intersection {
     private Set<Road> incomingRoads;
     Map<Road, TrafficLight> entryLights;
     PhaseController controller;
-    private TrafficLight trafficLight;
 
-    public Intersection(int id, TrafficLight trafficLight) {
-        if(trafficLight == null)
-            throw new IllegalArgumentException("TrafficLight cannot be null!");
-
+    public Intersection(int id) {
         this.id = id;
         this.outgoingRoads = new LinkedHashSet<>();
         this.incomingRoads = new LinkedHashSet<>();
         entryLights = new HashMap<>();
-        this.trafficLight = trafficLight;
     }
 
     public int getId() {
@@ -30,10 +25,6 @@ public class Intersection {
 
     public Set<Road> getOutgoingRoads() {
         return outgoingRoads;
-    }
-
-    public TrafficLight getTrafficLight() {
-        return trafficLight;
     }
 
     public TrafficLight getLightFor(Road road){
@@ -64,6 +55,10 @@ public class Intersection {
         return entryLights;
     }
 
+    public void setEntryLights(Map<Road,TrafficLight> map){
+        entryLights = map;
+    }
+
     public Set<Road> getIncomingRoads() {
         return incomingRoads;
     }
@@ -89,7 +84,7 @@ public class Intersection {
         return "Intersection{" +
                 "id=" + id +
                 ", outgoingRoads=" + outgoingRoads +
-                ", trafficLight=" + trafficLight +
+                ", trafficLight=" + entryLights +
                 '}';
     }
 }

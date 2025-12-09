@@ -1,10 +1,13 @@
 package com.britten.simulation;
 
 import com.britten.control.FixedCycleStrategy;
+import com.britten.control.Phase;
+import com.britten.control.PhaseController;
 import com.britten.domain.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,12 +23,13 @@ public class SimulationFlowTest {
      */
     @Test
     public void carDrivesAtDefaultSpeedForMultipleTicks(){
-        Intersection i1 = new Intersection(1, new TrafficLight(new FixedCycleStrategy(2,2,2)));
-        Intersection i2 = new Intersection(2, new TrafficLight(new FixedCycleStrategy(2,2,2)));
+        Intersection i1 = new Intersection(1);
+        Intersection i2 = new Intersection(2);
 
         Road r1 = new Road(i1, i2, 100);
 
         i1.addOutgoingRoad(r1);
+        i2.addIncomingRoad(r1, new TrafficLight(1, new FixedCycleStrategy(2,2,2)));
 
         Vehicle car = new Car(1, r1, 10);
 
@@ -63,13 +67,14 @@ public class SimulationFlowTest {
      */
     @Test
     public void carDrivesToIntersectionWithRedTrafficLightAndStops(){
-        Intersection i1 = new Intersection(1, new TrafficLight(new FixedCycleStrategy(2,1,5)));
-        Intersection i2 = new Intersection(2, new TrafficLight(new FixedCycleStrategy(2,1,5)));
+        Intersection i1 = new Intersection(1);
+        Intersection i2 = new Intersection(2);
 
         int END_OF_ROAD = 100;
         Road r1 = new Road(i1, i2, END_OF_ROAD);
 
         i1.addOutgoingRoad(r1);
+        i2.addIncomingRoad(r1, new TrafficLight(1,new FixedCycleStrategy(2,1,5)));
 
         Vehicle car = new Car(1, r1, 10);
 
@@ -88,10 +93,11 @@ public class SimulationFlowTest {
         simulationEngine.runForTicks(1);
 
         assertThat(car.getPosition()).isEqualTo(END_OF_ROAD);
+        assertThat(i2.getLightFor(car.getCurrentRoad()).getState()).isEqualTo(TrafficLight.State.RED);
 
         simulationEngine.runForTicks(1);
 
-        assertThat(i2.getTrafficLight().getState()).isEqualTo(TrafficLight.State.RED);
+        assertThat(i2.getLightFor(r1).getState()).isEqualTo(TrafficLight.State.RED);
         assertThat(car.getPosition()).isEqualTo(END_OF_ROAD);
         assertThat(car.getSpeed()).isZero();
     }
@@ -103,8 +109,8 @@ public class SimulationFlowTest {
      */
     @Test
     public void carWaitsInFrontOfTrafficLightAndContinuesWhenGreen(){
-        Intersection i1 = new Intersection(1, new TrafficLight(new FixedCycleStrategy(2,1,5)));
-        Intersection i2 = new Intersection(2, new TrafficLight(new FixedCycleStrategy(2,1,5)));
+        Intersection i1 = new Intersection(1);
+        Intersection i2 = new Intersection(2);
 
         int END_OF_ROAD = 100;
         Road r1 = new Road(i1, i2, END_OF_ROAD);
@@ -112,6 +118,13 @@ public class SimulationFlowTest {
 
         i1.addOutgoingRoad(r1);
         i2.addOutgoingRoad(r2);
+
+        i2.addIncomingRoad(r1, new TrafficLight(1, new FixedCycleStrategy(2,1,5)));
+        i1.addIncomingRoad(r2, new TrafficLight(2, new FixedCycleStrategy(2,1,5)));
+
+        Phase phase = new Phase(Set.of(r1), 5);
+        PhaseController phaseController = new PhaseController(List.of(phase));
+        i2.setController(phaseController);
 
         Vehicle car = new Car(1, r1, 10);
 
@@ -121,15 +134,16 @@ public class SimulationFlowTest {
                 new MovementEngine()
         );
 
-        simulationEngine.runForTicks(12);
+        simulationEngine.runForTicks(10);
 
-        assertThat(i1.getTrafficLight().getState()).isEqualTo(TrafficLight.State.RED);
+        assertThat(i2.getLightFor(r1).getState()).isEqualTo(TrafficLight.State.RED);
         assertThat(car.getPosition()).isEqualTo(END_OF_ROAD);
         assertThat(car.getSpeed()).isZero();
 
         simulationEngine.runForTicks(1);
 
-        assertThat(i1.getTrafficLight().getState()).isEqualTo(TrafficLight.State.GREEN);
+        System.out.println(car.getPosition());
+        assertThat(i1.getLightFor(r2).getState()).isEqualTo(TrafficLight.State.GREEN);
         assertThat(car.getCurrentRoad()).isEqualTo(r2);
         assertThat(car.getPosition()).isEqualTo(10);
         assertThat(car.getSpeed()).isEqualTo(10);
@@ -144,8 +158,8 @@ public class SimulationFlowTest {
      */
     @Test
     void carJoinsNextRoadAndAppliesOverflowCorrectly(){
-        Intersection i1 = new Intersection(1, new TrafficLight(new FixedCycleStrategy(100,1,1)));
-        Intersection i2 = new Intersection(2, new TrafficLight(new FixedCycleStrategy(100,1,1)));
+        Intersection i1 = new Intersection(1);
+        Intersection i2 = new Intersection(2);
 
         int END_OF_ROAD = 100;
         Road r1 = new Road(i1, i2, END_OF_ROAD);
@@ -153,6 +167,14 @@ public class SimulationFlowTest {
 
         i1.addOutgoingRoad(r1);
         i2.addOutgoingRoad(r2);
+
+        i2.addIncomingRoad(r1, new TrafficLight(1,new FixedCycleStrategy(100,1,1)));
+        i1.addIncomingRoad(r2, new TrafficLight(2, new FixedCycleStrategy(100,1,1)));
+
+        Phase phase = new Phase(Set.of(r1), 100);
+        PhaseController phaseController = new PhaseController(List.of(phase));
+        i2.setController(phaseController);
+
 
         Vehicle car = new Car(1, r1, 15);
 
@@ -164,7 +186,7 @@ public class SimulationFlowTest {
 
         simulationEngine.runForTicks(6);
 
-        assertThat(i2.getTrafficLight().getState()).isEqualTo(TrafficLight.State.GREEN);
+        assertThat(i2.getLightFor(r1).getState()).isEqualTo(TrafficLight.State.GREEN);
         assertThat(car.getPosition()).isEqualTo(90);
 
         simulationEngine.runForTicks(1);
@@ -180,8 +202,8 @@ public class SimulationFlowTest {
      */
     @Test
     void testCarQueueingAtTrafficLight(){
-        Intersection i1 = new Intersection(1, new TrafficLight(new FixedCycleStrategy(1,1,100)));
-        Intersection i2 = new Intersection(2, new TrafficLight(new FixedCycleStrategy(1,1,100)));
+        Intersection i1 = new Intersection(1);
+        Intersection i2 = new Intersection(2);
 
         int END_OF_ROAD = 100;
         Road r1 = new Road(i1, i2, END_OF_ROAD);
@@ -189,6 +211,9 @@ public class SimulationFlowTest {
 
         i1.addOutgoingRoad(r1);
         i2.addOutgoingRoad(r2);
+
+        i2.addIncomingRoad(r1, new TrafficLight(1, new FixedCycleStrategy(1,1,100)));
+        i1.addIncomingRoad(r2, new TrafficLight(2, new FixedCycleStrategy(1,1,100)));
 
         Vehicle car1 = new Car(1, r1, 10);
         car1.setPosition(10);

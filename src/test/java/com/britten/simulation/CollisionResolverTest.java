@@ -23,10 +23,12 @@ public class CollisionResolverTest {
     void setup() {
         resolver = new CollisionResolver();
 
-        from = new Intersection(1,new TrafficLight(new FixedCycleStrategy(2,2,2)));
-        to = new Intersection(2, new TrafficLight(new FixedCycleStrategy(2,2,2)));
+        from = new Intersection(1);
+        to = new Intersection(2);
 
         road = new Road(from, to, 200);
+
+        to.addIncomingRoad(road, new TrafficLight(1, new FixedCycleStrategy(2,2,2)));
 
         v1 = new Car(1, road, 10);
         v1.setPosition(89);

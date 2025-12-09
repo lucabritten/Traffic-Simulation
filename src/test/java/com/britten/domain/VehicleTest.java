@@ -13,8 +13,8 @@ public class VehicleTest {
     void testInitializeVehicleWithValidArgs(){
         int id = 1;
         Road road = new Road(
-                new Intersection(1, new TrafficLight(new FixedCycleStrategy(1,1,1))),
-                new Intersection(2,new TrafficLight(new FixedCycleStrategy(1,1,1))),
+                new Intersection(1),
+                new Intersection(2),
                 100);
         final int CAR_SPEED = 5;
 
@@ -40,8 +40,8 @@ public class VehicleTest {
     @Test
     void testInitializeVehicle_negativeSpeed_throwsException(){
         Road road = new Road(
-                new Intersection(1, new TrafficLight(new FixedCycleStrategy(1,1,1))),
-                new Intersection(2,new TrafficLight(new FixedCycleStrategy(1,1,1))),
+                new Intersection(1),
+                new Intersection(2),
                 100
         );
 
@@ -53,8 +53,8 @@ public class VehicleTest {
     @Test
     void testSetPosition_validValue_updatePosition(){
         Road road = new Road(
-                new Intersection(1, new TrafficLight(new FixedCycleStrategy(1,1,1))),
-                new Intersection(2,new TrafficLight(new FixedCycleStrategy(1,1,1))),
+                new Intersection(1),
+                new Intersection(2),
                 100)
                 ;
         Vehicle vehicle = new Car(1, road);
@@ -67,8 +67,8 @@ public class VehicleTest {
     @Test
     void testSetPosition_valueGreaterRoadLength_throwException(){
         Road road = new Road(
-                new Intersection(1, new TrafficLight(new FixedCycleStrategy(1,1,1))),
-                new Intersection(2,new TrafficLight(new FixedCycleStrategy(1,1,1))),
+                new Intersection(1),
+                new Intersection(2),
                 100);
         Vehicle vehicle = new Car(1, road);
 
@@ -82,14 +82,14 @@ public class VehicleTest {
     @Test
     void testSetCurrentRoad_validRoad_accept(){
         Road road1 = new Road(
-                new Intersection(1, new TrafficLight(new FixedCycleStrategy(1,1,1))),
-                new Intersection(2,new TrafficLight(new FixedCycleStrategy(1,1,1))),
+                new Intersection(1),
+                new Intersection(2),
                 100);
         Vehicle vehicle = new Car(1, road1);
 
         Road road2 = new Road(
-                new Intersection(3, new TrafficLight(new FixedCycleStrategy(1,1,1))),
-                new Intersection(4,new TrafficLight(new FixedCycleStrategy(1,1,1))),
+                new Intersection(3),
+                new Intersection(4),
                 100);
 
         vehicle.setCurrentRoad(road2);
@@ -100,8 +100,8 @@ public class VehicleTest {
     @Test
     void testSetCurrentRoad_nullRoad_throwException(){
         Road road = new Road(
-                new Intersection(1, new TrafficLight(new FixedCycleStrategy(1,1,1))),
-                new Intersection(2,new TrafficLight(new FixedCycleStrategy(1,1,1))),
+                new Intersection(1),
+                new Intersection(2),
                 100);
         Vehicle vehicle = new Car(1, road);
 
@@ -113,8 +113,8 @@ public class VehicleTest {
     @Test
     void testSetSpeed_negativeValue_throwException(){
         Road road = new Road(
-                new Intersection(1, new TrafficLight(new FixedCycleStrategy(1,1,1))),
-                new Intersection(2,new TrafficLight(new FixedCycleStrategy(1,1,1))),
+                new Intersection(1),
+                new Intersection(2),
                 100);
         Vehicle vehicle = new Car(1, road);
 
@@ -126,8 +126,8 @@ public class VehicleTest {
     @Test
     void testSetNextPosition_negativeValue_throwsException(){
         Road road = new Road(
-                new Intersection(1, new TrafficLight(new FixedCycleStrategy(1,1,1))),
-                new Intersection(2,new TrafficLight(new FixedCycleStrategy(1,1,1))),
+                new Intersection(1),
+                new Intersection(2),
                 100);
         Vehicle vehicle = new Car(1, road);
 
@@ -139,8 +139,8 @@ public class VehicleTest {
     @Test
     void testSetNextSpeed_negativeValue_throwsException(){
         Road road = new Road(
-                new Intersection(1, new TrafficLight(new FixedCycleStrategy(1,1,1))),
-                new Intersection(2,new TrafficLight(new FixedCycleStrategy(1,1,1))),
+                new Intersection(1),
+                new Intersection(2),
                 100);
         Vehicle vehicle = new Car(1, road);
 
@@ -152,8 +152,8 @@ public class VehicleTest {
     @Test
     void testEnableRouting_noRouteSet_throwsException(){
         Road road = new Road(
-                new Intersection(1, new TrafficLight(new FixedCycleStrategy(1,1,1))),
-                new Intersection(2,new TrafficLight(new FixedCycleStrategy(1,1,1))),
+                new Intersection(1),
+                new Intersection(2),
                 100);
         Vehicle vehicle = new Car(1, road);
 
@@ -165,8 +165,8 @@ public class VehicleTest {
     @Test
     void testEnableRouting_emptyRoute_throwsException(){
         Road road = new Road(
-                new Intersection(1, new TrafficLight(new FixedCycleStrategy(1,1,1))),
-                new Intersection(2,new TrafficLight(new FixedCycleStrategy(1,1,1))),
+                new Intersection(1),
+                new Intersection(2),
                 100);
         Vehicle vehicle = new Car(1, road);
 
@@ -180,8 +180,8 @@ public class VehicleTest {
     @Test
     void testEnableRouting_validRoute_throwsNoException(){
         Road road = new Road(
-                new Intersection(1, new TrafficLight(new FixedCycleStrategy(1,1,1))),
-                new Intersection(2,new TrafficLight(new FixedCycleStrategy(1,1,1))),
+                new Intersection(1),
+                new Intersection(2),
                 100);
         Vehicle vehicle = new Car(1, road);
 
