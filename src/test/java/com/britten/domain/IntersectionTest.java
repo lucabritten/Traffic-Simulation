@@ -1,6 +1,5 @@
 package com.britten.domain;
 
-import com.britten.control.FixedCycleStrategy;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -1,7 +1,5 @@
 package com.britten.domain;
 
-import com.britten.control.FixedCycleStrategy;
-import com.britten.control.TrafficLightStrategy;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.*;

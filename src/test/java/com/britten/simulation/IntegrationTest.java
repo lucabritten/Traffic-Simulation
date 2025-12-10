@@ -1,14 +1,10 @@
 package com.britten.simulation;
 
-import com.britten.control.FixedCycleStrategy;
-import com.britten.control.Phase;
-import com.britten.control.PhaseController;
 import com.britten.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

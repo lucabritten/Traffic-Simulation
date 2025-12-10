@@ -1,6 +1,5 @@
 package com.britten.factory;
 
-import com.britten.control.FixedCycleStrategy;
 import com.britten.control.Phase;
 import com.britten.control.PhaseController;
 import com.britten.domain.*;
@@ -9,7 +8,6 @@ import com.britten.routing.RoadNetwork;
 import com.britten.routing.RoutePlanner;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class SquareGraphFactory implements GraphFactory{

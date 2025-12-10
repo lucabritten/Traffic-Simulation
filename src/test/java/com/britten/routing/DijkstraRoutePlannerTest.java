@@ -1,9 +1,7 @@
 package com.britten.routing;
 
-import com.britten.control.FixedCycleStrategy;
 import com.britten.domain.Intersection;
 import com.britten.domain.Road;
-import com.britten.domain.TrafficLight;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
