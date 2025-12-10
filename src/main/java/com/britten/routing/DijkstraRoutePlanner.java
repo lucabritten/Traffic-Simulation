@@ -7,9 +7,9 @@ import java.util.*;
 
 public class DijkstraRoutePlanner implements RoutePlanner{
 
-    private Map<Intersection, Integer> distance;
-    private Map<Intersection, Road> previousRoad;
-    private PriorityQueue<Intersection> priorityQueue;
+    private final Map<Intersection, Integer> distance;
+    private final Map<Intersection, Road> previousRoad;
+    private final PriorityQueue<Intersection> priorityQueue;
 
     public DijkstraRoutePlanner(){
         distance = new HashMap<>();
