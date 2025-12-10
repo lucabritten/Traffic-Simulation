@@ -28,7 +28,7 @@ public class Snapshot {
         return roadVehicles;
     }
 
-    public Map<Road, String> getTrafficLightStates() {
+    public Map<Road, String> getLightStates() {
         return trafficLightStates;
     }
 

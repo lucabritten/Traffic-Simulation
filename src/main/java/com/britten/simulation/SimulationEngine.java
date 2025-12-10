@@ -6,7 +6,6 @@ import com.britten.domain.TrafficLight;
 import com.britten.domain.Vehicle;
 import com.britten.logging.SimulationEvent;
 import com.britten.logging.SimulationEventListener;
-import com.britten.ui.AsciiRenderer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +21,7 @@ public class SimulationEngine {
     private CollisionResolver collisionResolver;
 
     private final List<SimulationEventListener> listeners;
+    private int globalTick = 0;
 
     /**
      * vehicles and intersections may be immutable;
@@ -53,7 +53,7 @@ public class SimulationEngine {
         // update intersection phase controllers and apply current phases
         intersections.forEach(i -> {
             if (i.getController() != null) {
-                i.getController().update();
+                i.getController().update(i, tick);
                 i.getController().applyPhase(i);
             }
         });
@@ -90,9 +90,10 @@ public class SimulationEngine {
     }
 
     public void runForTicks(int totalTicks){
-        for(int i = 0; i < totalTicks; i++){
-            tick(1, i);
-            System.out.println("Tick " + i);
+        for (int j = 0; j < totalTicks; j++) {
+            tick(1, globalTick);
+            System.out.println("Tick " + globalTick);
+            globalTick++;
         }
     }
 

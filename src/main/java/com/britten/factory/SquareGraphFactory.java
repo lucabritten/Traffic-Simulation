@@ -1,7 +1,9 @@
 package com.britten.factory;
 
+import com.britten.control.FixedCycleStrategy;
 import com.britten.control.Phase;
 import com.britten.control.PhaseController;
+import com.britten.control.PhaseStrategy;
 import com.britten.domain.*;
 import com.britten.routing.DijkstraRoutePlanner;
 import com.britten.routing.RoadNetwork;
@@ -54,10 +56,12 @@ public class SquareGraphFactory implements GraphFactory{
                 5
         );
 
-        PhaseController controller1 = new PhaseController(List.of(nsPhase, ewPhase));
-        PhaseController controller2 = new PhaseController(List.of(nsPhase, ewPhase));
-        PhaseController controller3 = new PhaseController(List.of(nsPhase, ewPhase));
-        PhaseController controller4 = new PhaseController(List.of(nsPhase, ewPhase));
+        PhaseStrategy globalStrategy = new FixedCycleStrategy(List.of(nsPhase, ewPhase));
+
+        PhaseController controller1 = new PhaseController(globalStrategy);
+        PhaseController controller2 = new PhaseController(globalStrategy);
+        PhaseController controller3 = new PhaseController(globalStrategy);
+        PhaseController controller4 = new PhaseController(globalStrategy);
 
         i1.setController(controller1);
         i2.setController(controller2);

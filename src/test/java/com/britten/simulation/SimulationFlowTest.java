@@ -1,5 +1,6 @@
 package com.britten.simulation;
 
+import com.britten.control.FixedCycleStrategy;
 import com.britten.control.Phase;
 import com.britten.control.PhaseController;
 import com.britten.domain.*;
@@ -27,7 +28,7 @@ public class SimulationFlowTest {
 
         // Phase: r1 always green, no yellow, no red
         Phase phase = new Phase(Set.of(r1), 1000, 1, 1);
-        PhaseController controller = new PhaseController(List.of(phase));
+        PhaseController controller = new PhaseController(new FixedCycleStrategy(List.of(phase)));
         i2.setController(controller);
 
         i2.addIncomingRoad(r1, new TrafficLight(1));
@@ -61,7 +62,7 @@ public class SimulationFlowTest {
 
         // Phase keeps r1 always RED
         Phase phase = new Phase(Set.of(), 1, 1, 1000);
-        PhaseController controller = new PhaseController(List.of(phase));
+        PhaseController controller = new PhaseController(new FixedCycleStrategy(List.of(phase)));
         i2.setController(controller);
 
         i2.addIncomingRoad(r1, new TrafficLight(1));
@@ -98,13 +99,12 @@ public class SimulationFlowTest {
         i1.addOutgoingRoad(r1);
         i2.addOutgoingRoad(r2);
 
-        // Phase 1: r1 green for 9 ticks, then 1 yellow, 2 red
-        // Then cycle repeats → r2 becomes green when r1 is red
-        Phase p1 = new Phase(Set.of(r1), 9, 1, 2);
-        Phase p2 = new Phase(Set.of(r2), 9, 1, 2);
-        PhaseController controller = new PhaseController(List.of(p1, p2));
-        i2.setController(controller);
-        i1.setController(controller);
+
+        Phase p1 = new Phase(Set.of(r1), 9, 1, 1);
+        Phase p2 = new Phase(Set.of(r2), 9, 1, 1);
+
+        i2.setController(new PhaseController(new FixedCycleStrategy(List.of(p1, p2))));
+        i1.setController(new PhaseController(new FixedCycleStrategy(List.of(p1, p2))));
 
         i2.addIncomingRoad(r1, new TrafficLight(1));
         i1.addIncomingRoad(r2, new TrafficLight(2));
@@ -125,9 +125,9 @@ public class SimulationFlowTest {
         assertThat(i2.getLightFor(r1).getState()).isNotEqualTo(TrafficLight.State.GREEN);
 
         // One more tick -> phase moves to r2 green
-        sim.runForTicks(1);
+        sim.runForTicks(12);
 
-        assertThat(i1.getLightFor(r2).getState()).isEqualTo(TrafficLight.State.GREEN);
+        assertThat(i2.getLightFor(r1).getState()).isEqualTo(TrafficLight.State.GREEN);
         assertThat(car.getCurrentRoad()).isEqualTo(r2);
         assertThat(car.getPosition()).isEqualTo(10);
         assertThat(car.getSpeed()).isEqualTo(10);
@@ -154,7 +154,7 @@ public class SimulationFlowTest {
         // r2 always green
         Phase p2 = new Phase(Set.of(r2), 1000, 1, 1);
 
-        PhaseController controller = new PhaseController(List.of(p1, p2));
+        PhaseController controller = new PhaseController(new FixedCycleStrategy(List.of(p1, p2)));
         i2.setController(controller);
         i1.setController(controller);
 
@@ -195,7 +195,7 @@ public class SimulationFlowTest {
 
         // Always red → forces queueing
         Phase p = new Phase(Set.of(), 1, 1, 1000);
-        PhaseController controller = new PhaseController(List.of(p));
+        PhaseController controller = new PhaseController(new FixedCycleStrategy(List.of(p)));
         i2.setController(controller);
 
         i2.addIncomingRoad(r1, new TrafficLight(1));

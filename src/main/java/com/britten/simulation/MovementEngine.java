@@ -56,10 +56,10 @@ public class MovementEngine {
         var light = intersection.getLightFor(road);
         if (light != null && "YELLOW".equals(light.getState().name())) {
             int distanceToIntersection = road.getLength() - vehicle.getPosition();
-            // if too close to comfortably cross, stop at safe distance
+
             if (distanceToIntersection <= SAFE_DISTANCE + vehicle.getSpeed()) {
                 vehicle.setNextRoad(road);
-                vehicle.setNextPosition(road.getLength() - SAFE_DISTANCE);
+                vehicle.setNextPosition(road.getLength());
                 vehicle.setNextSpeed(0);
                 return;
             }

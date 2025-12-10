@@ -5,24 +5,32 @@ import com.britten.domain.Intersection;
 import java.util.List;
 
 public class FixedCycleStrategy implements PhaseStrategy {
-    private final List<Phase> signalPlan;
-    private int activePhaseIndex = 0;
+
+    private final List<Phase> plan;
+    private int index = 0;
     private int ticksInPhase = 0;
 
-    public FixedCycleStrategy(List<Phase> signalPlan) {
-        this.signalPlan = signalPlan;
+    public FixedCycleStrategy(List<Phase> plan) {
+        this.plan = plan;
     }
 
     @Override
-    public Phase chooseNextPhase(Intersection intersection, int tick) {
-        Phase current = signalPlan.get(activePhaseIndex);
+    public Phase chooseNextPhase(Intersection i, int tick) {
+        Phase p = plan.get(index);
 
-        if (ticksInPhase >= current.totalDuration()) {
-            activePhaseIndex = (activePhaseIndex + 1) % signalPlan.size();
+        if (ticksInPhase >= p.totalDuration()) {
+            index = (index + 1) % plan.size();
             ticksInPhase = 0;
+            p = plan.get(index);
         }
 
+        // advance internal counter AFTER selecting current phase
         ticksInPhase++;
-        return current;
+        return p;
+    }
+
+    @Override
+    public int getElapsedTicks() {
+        return ticksInPhase;
     }
 }

@@ -6,7 +6,7 @@ import com.britten.domain.Vehicle;
 public class IntersectionController {
 
     public boolean mayEnter(Vehicle vehicle, Road from, Snapshot snapshot){
-        String state = snapshot.getTrafficLightStates().get(from);
+        String state = snapshot.getLightStates().get(from);
         if (state == null) return false;
 
         // RED → always stop

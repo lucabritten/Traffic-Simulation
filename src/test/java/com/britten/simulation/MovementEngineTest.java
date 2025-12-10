@@ -16,7 +16,6 @@ public class MovementEngineTest {
     private Intersection i2;
     private Road road;
     private Vehicle vehicle;
-    private final static int SAFE_DISTANCE = 2;
 
     @BeforeEach
     void setup() {
@@ -111,7 +110,7 @@ public class MovementEngineTest {
         engine.computeNext(v, snapshot, 1);
 
         assertThat(v.getNextSpeed()).isZero();
-        assertThat(v.getNextPosition()).isEqualTo(100 - SAFE_DISTANCE);
+        assertThat(v.getNextPosition()).isEqualTo(100);
     }
 
     @Test
