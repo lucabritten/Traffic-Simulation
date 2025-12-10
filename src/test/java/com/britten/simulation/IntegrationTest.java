@@ -33,8 +33,8 @@ public class IntegrationTest {
         r2 = new Road(i2, i1, 100);
 
 
-        t1 = new TrafficLight(1,new FixedCycleStrategy(100,100,100));
-        t2 = new TrafficLight(2,new FixedCycleStrategy(100,100,100));
+        t1 = new TrafficLight(1);
+        t2 = new TrafficLight(2);
 
         // outgoing
         i1.addOutgoingRoad(r1);

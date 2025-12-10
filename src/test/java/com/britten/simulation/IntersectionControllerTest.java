@@ -20,65 +20,59 @@ public class IntersectionControllerTest {
     private Vehicle v1;
     private Vehicle v2;
 
-    @BeforeEach
-    void setup() {
-        controller = new IntersectionController();
 
-        fromIntersection = new Intersection(1);
-        toIntersection = new Intersection(2);
+    @Test
+    void redLight_vehicleMayNotEnter() {
+        Snapshot s = SnapshotBuilder.singleRoadSnapshot("RED");
+        Road road = s.getRoadVehicles().keySet().iterator().next();
+        Vehicle v = s.getFrontVehicle(road);
+        IntersectionController c = new IntersectionController();
 
-        road = new Road(fromIntersection, toIntersection, 100);
-
-        v1 = new Car(1, road, 10);
-        v1.setPosition(50);
-
-        v2 = new Car(2, road, 10);
-        v2.setPosition(40);
-    }
-
-    private Snapshot snapshotWith(String light, List<Vehicle> vehicles) {
-        Map<Road, List<Vehicle>> roadMap = new HashMap<>();
-        roadMap.put(road, vehicles);
-
-        Map<Road, String> lightMap = new HashMap<>();
-        lightMap.put(road, light);
-
-        return new Snapshot(roadMap, lightMap);
+        assertThat(c.mayEnter(v, road, s))
+                .isFalse();
     }
 
     @Test
-    void mayEnter_green_and_firstVehicle_returnsTrue() {
-        Snapshot snap = snapshotWith("GREEN", List.of(v1, v2));
+    void green_firstVehicleMayEnter() {
+        Snapshot s = SnapshotBuilder.singleRoadSnapshot("GREEN");
+        Road road = s.getRoadVehicles().keySet().iterator().next();
+        Vehicle v = s.getFrontVehicle(road);
+        IntersectionController c = new IntersectionController();
 
-        boolean result = controller.mayEnter(v1, road, snap);
-
-        assertThat(result).isTrue();
+        assertThat(c.mayEnter(v, road, s))
+                .isTrue();
     }
 
     @Test
-    void mayEnter_green_but_not_firstVehicle_returnsFalse() {
-        Snapshot snap = snapshotWith("GREEN", List.of(v1, v2));
+    void green_secondVehicleMayNotEnter() {
+        Snapshot s = SnapshotBuilder.twoVehicleSnapshot("GREEN");
+        Road road = s.getRoadVehicles().keySet().iterator().next();
+        Vehicle v = s.getSecondVehicle(road);
+        IntersectionController c = new IntersectionController();
 
-        boolean result = controller.mayEnter(v2, road, snap);
-
-        assertThat(result).isFalse();
+        assertThat(c.mayEnter(v, road, s))
+                .isFalse();
     }
 
     @Test
-    void mayEnter_red_light_blocksAll() {
-        Snapshot snap = snapshotWith("RED", List.of(v1));
+    void yellow_onlyMovingFrontVehicleMayEnter() {
+        Snapshot s = SnapshotBuilder.movingFrontVehicle("YELLOW");
+        Road road = s.getRoadVehicles().keySet().iterator().next();
+        Vehicle v = s.getFrontVehicle(road);
+        IntersectionController c = new IntersectionController();
 
-        boolean result = controller.mayEnter(v1, road, snap);
-
-        assertThat(result).isFalse();
+        assertThat(c.mayEnter(v, road, s))
+                .isTrue();
     }
 
     @Test
-    void mayEnter_emptyRoad_green_allowsEnter() {
-        Snapshot snap = snapshotWith("GREEN", Collections.emptyList());
+    void yellow_standingFrontVehicleMayNotEnter() {
+        Snapshot s = SnapshotBuilder.stoppedFrontVehicle("YELLOW");
+        Road road = s.getRoadVehicles().keySet().iterator().next();
+        Vehicle v = s.getFrontVehicle(road);
+        IntersectionController c = new IntersectionController();
 
-        boolean result = controller.mayEnter(v1, road, snap);
-
-        assertThat(result).isTrue();
+        assertThat(c.mayEnter(v, road, s))
+                .isFalse();
     }
 }

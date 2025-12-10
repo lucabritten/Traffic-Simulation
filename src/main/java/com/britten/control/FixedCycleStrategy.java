@@ -1,65 +1,28 @@
 package com.britten.control;
 
-import com.britten.domain.TrafficLight;
-import com.britten.logging.SimulationEventListener;
-import com.britten.logging.SimulationEventPublisher;
+import com.britten.domain.Intersection;
 
-public class FixedCycleStrategy implements TrafficLightStrategy {
+import java.util.List;
 
-    private final int greenDuration;
-    private final int yellowDuration;
-    private final int redDuration;
+public class FixedCycleStrategy implements PhaseStrategy {
+    private final List<Phase> signalPlan;
+    private int activePhaseIndex = 0;
+    private int ticksInPhase = 0;
 
-    private SimulationEventPublisher publisher;
-
-    public FixedCycleStrategy(int greenDuration, int yellowDuration, int redDuration){
-        if(greenDuration <= 0 || yellowDuration <= 0 || redDuration < 0)
-            throw new IllegalArgumentException("Traffic Light duration cannot be negative or zero.");
-
-        this.greenDuration = greenDuration;
-        this.yellowDuration = yellowDuration;
-        this.redDuration = redDuration;
-    }
-
-    public void setPublisher(SimulationEventPublisher publisher){
-        this.publisher = publisher;
+    public FixedCycleStrategy(List<Phase> signalPlan) {
+        this.signalPlan = signalPlan;
     }
 
     @Override
-    public TrafficLight.State nextState(TrafficLight light) {
+    public Phase chooseNextPhase(Intersection intersection, int tick) {
+        Phase current = signalPlan.get(activePhaseIndex);
 
-        TrafficLight.State current = light.getState();
-        int currentTick = light.getCurrentTick();
-
-        switch (current){
-            case RED -> {
-                if(currentTick >= redDuration) {
-                    light.resetTick();
-                    return TrafficLight.State.GREEN;
-                }
-            }
-            case GREEN -> {
-                if(currentTick >= greenDuration){
-                    light.resetTick();
-                    return TrafficLight.State.YELLOW;
-                }
-            }
-            case YELLOW -> {
-                if(currentTick >= yellowDuration){
-                    light.resetTick();
-                    return TrafficLight.State.RED;
-                }
-            }
+        if (ticksInPhase >= current.totalDuration()) {
+            activePhaseIndex = (activePhaseIndex + 1) % signalPlan.size();
+            ticksInPhase = 0;
         }
-        return current;
-    }
 
-    @Override
-    public String toString() {
-        return "FixedCycleStrategy{" +
-                "greenDuration=" + greenDuration +
-                ", yellowDuration=" + yellowDuration +
-                ", redDuration=" + redDuration +
-                '}';
+        ticksInPhase++;
+        return current;
     }
 }

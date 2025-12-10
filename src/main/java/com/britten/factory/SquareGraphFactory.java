@@ -29,10 +29,10 @@ public class SquareGraphFactory implements GraphFactory{
         Road r3 = new Road(i3, i4, 50);
         Road r4 = new Road(i4, i1, 50);
 
-        TrafficLight t1 = new TrafficLight(1,new FixedCycleStrategy(3,1,5));
-        TrafficLight t2 = new TrafficLight(2,new FixedCycleStrategy(3,1,5));
-        TrafficLight t3 = new TrafficLight(3,new FixedCycleStrategy(3,1,5));
-        TrafficLight t4 = new TrafficLight(4, new FixedCycleStrategy(3,1,5));
+        TrafficLight t1 = new TrafficLight(1);
+        TrafficLight t2 = new TrafficLight(2);
+        TrafficLight t3 = new TrafficLight(3);
+        TrafficLight t4 = new TrafficLight(4);
 
         // outgoing
         i1.addOutgoingRoad(r1);

@@ -8,29 +8,29 @@ import static org.assertj.core.api.Assertions.*;
 
 public class TrafficLightTest {
 
-//    @Test
-//    public void testInitializeObjectWithValidFieldData(){
-//
-//        int greenDuration = 1;
-//        int yellowDuration = 1;
-//        int redDuration = 1;
-//        TrafficLightStrategy strategy = new FixedCycleStrategy(greenDuration,yellowDuration, redDuration);
-//        TrafficLight.State initState = TrafficLight.State.RED;
-//
-//        TrafficLight trafficLight = new TrafficLight(strategy);
-//
-//        assertThat(trafficLight.getCurrentTick()).isZero();
-//        assertThat(trafficLight.getStrategy()).isEqualTo(strategy);
-//        assertThat(trafficLight.getState()).isEqualTo(initState);
-//    }
-//
-//    @Test
-//    public void testInitializeObjectWithInvalidGreenDuration(){
-//
-//        assertThatThrownBy(() -> new TrafficLight(null))
-//                .isInstanceOf(IllegalArgumentException.class)
-//                .hasMessage("Strategy is not allowed to be null.");
-//    }
+    @Test
+    void defaultStateIsRed() {
+        TrafficLight tl = new TrafficLight(1);
+        assertThat(tl.getState()).isEqualTo(TrafficLight.State.RED);
+    }
+
+    @Test
+    void setState_setsCorrectValue() {
+        TrafficLight tl = new TrafficLight(1);
+        tl.setState(TrafficLight.State.GREEN);
+        assertThat(tl.getState()).isEqualTo(TrafficLight.State.GREEN);
+    }
+
+    @Test
+    void stateChangesCorrectly() {
+        TrafficLight tl = new TrafficLight(1);
+
+        tl.setState(TrafficLight.State.GREEN);
+        tl.setState(TrafficLight.State.YELLOW);
+        tl.setState(TrafficLight.State.RED);
+
+        assertThat(tl.getState()).isEqualTo(TrafficLight.State.RED);
+    }
 
 
 }

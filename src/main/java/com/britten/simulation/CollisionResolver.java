@@ -26,7 +26,10 @@ public class CollisionResolver {
                 int backNext = back.getNextPosition();
 
                 if(backNext >= frontNext - SAFE_DISTANCE)
+                    if(frontNext - SAFE_DISTANCE >= 0)
                     back.setNextPosition(frontNext - SAFE_DISTANCE);
+                    else
+                        back.setNextPosition(back.getPosition());
             }
         }
     }

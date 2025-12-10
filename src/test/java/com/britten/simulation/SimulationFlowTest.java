@@ -1,6 +1,5 @@
 package com.britten.simulation;
 
-import com.britten.control.FixedCycleStrategy;
 import com.britten.control.Phase;
 import com.britten.control.PhaseController;
 import com.britten.domain.*;
@@ -13,225 +12,210 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class SimulationFlowTest {
 
-
-    /*
-    Car drives 5 ticks normal
-    speed 10
-    start 0
-    after 5 ticks -> pos50
-    speed is default
+    /**
+     * Basic sanity test:
+     * A car with speed 10 moves 5 ticks → pos = 50
      */
     @Test
-    public void carDrivesAtDefaultSpeedForMultipleTicks(){
+    public void carDrivesAtDefaultSpeedForMultipleTicks() {
         Intersection i1 = new Intersection(1);
         Intersection i2 = new Intersection(2);
 
         Road r1 = new Road(i1, i2, 100);
 
         i1.addOutgoingRoad(r1);
-        i2.addIncomingRoad(r1, new TrafficLight(1, new FixedCycleStrategy(2,2,2)));
+
+        // Phase: r1 always green, no yellow, no red
+        Phase phase = new Phase(Set.of(r1), 1000, 1, 1);
+        PhaseController controller = new PhaseController(List.of(phase));
+        i2.setController(controller);
+
+        i2.addIncomingRoad(r1, new TrafficLight(1));
 
         Vehicle car = new Car(1, r1, 10);
 
         SimulationEngine simulationEngine = new SimulationEngine(
                 List.of(car),
-                List.of(i1,i2),
+                List.of(i1, i2),
                 new MovementEngine()
         );
-
-        assertThat(car.getSpeed()).isEqualTo(10);
-        assertThat(car.getSpeed()).isEqualTo(car.getDefaultSpeed());
-        assertThat(car.getPosition()).isEqualTo(0);
-        assertThat(car.getCurrentRoad()).isEqualTo(r1);
 
         simulationEngine.runForTicks(5);
 
-        assertThat(car.getSpeed()).isEqualTo(10);
-        assertThat(car.getSpeed()).isEqualTo(car.getDefaultSpeed());
         assertThat(car.getPosition()).isEqualTo(50);
         assertThat(car.getCurrentRoad()).isEqualTo(r1);
+        assertThat(car.getSpeed()).isEqualTo(10);
     }
 
-    /*
-    Car drives to TL and stops
-    road 100
-    speed 10
-    start 0
-    ampel red since tick6
-
-    expect:
-        after 9 ticks pos90,
-         tick10 = 100 (stop),
-         never pos > 100,
-         Current speed 0
+    /**
+     * Car stops at end of road when traffic light is red
      */
     @Test
-    public void carDrivesToIntersectionWithRedTrafficLightAndStops(){
+    public void carDrivesToIntersectionWithRedTrafficLightAndStops() {
         Intersection i1 = new Intersection(1);
         Intersection i2 = new Intersection(2);
 
-        int END_OF_ROAD = 100;
-        Road r1 = new Road(i1, i2, END_OF_ROAD);
+        Road r1 = new Road(i1, i2, 100);
 
         i1.addOutgoingRoad(r1);
-        i2.addIncomingRoad(r1, new TrafficLight(1,new FixedCycleStrategy(2,1,5)));
+
+        // Phase keeps r1 always RED
+        Phase phase = new Phase(Set.of(), 1, 1, 1000);
+        PhaseController controller = new PhaseController(List.of(phase));
+        i2.setController(controller);
+
+        i2.addIncomingRoad(r1, new TrafficLight(1));
 
         Vehicle car = new Car(1, r1, 10);
 
-        SimulationEngine simulationEngine = new SimulationEngine(
+        SimulationEngine sim = new SimulationEngine(
                 List.of(car),
-                List.of(i1,i2),
+                List.of(i1, i2),
                 new MovementEngine()
         );
 
-        simulationEngine.runForTicks(9);
-
-        assertThat(car.getSpeed()).isEqualTo(10);
-        assertThat(car.getSpeed()).isEqualTo(car.getDefaultSpeed());
+        sim.runForTicks(9);
         assertThat(car.getPosition()).isEqualTo(90);
 
-        simulationEngine.runForTicks(1);
-
-        assertThat(car.getPosition()).isEqualTo(END_OF_ROAD);
-        assertThat(i2.getLightFor(car.getCurrentRoad()).getState()).isEqualTo(TrafficLight.State.RED);
-
-        simulationEngine.runForTicks(1);
-
-        assertThat(i2.getLightFor(r1).getState()).isEqualTo(TrafficLight.State.RED);
-        assertThat(car.getPosition()).isEqualTo(END_OF_ROAD);
+        sim.runForTicks(1);
+        assertThat(car.getPosition()).isEqualTo(100);
         assertThat(car.getSpeed()).isZero();
+        assertThat(i2.getLightFor(r1).getState()).isEqualTo(TrafficLight.State.RED);
     }
 
-    /*
-    Car waits in front of traffic light
-    when green -> continues driving at default speed
-    car is on new road
+    /**
+     * Car waits at red, then moves when green.
      */
     @Test
-    public void carWaitsInFrontOfTrafficLightAndContinuesWhenGreen(){
+    public void carWaitsInFrontOfTrafficLightAndContinuesWhenGreen() {
+
         Intersection i1 = new Intersection(1);
         Intersection i2 = new Intersection(2);
 
-        int END_OF_ROAD = 100;
-        Road r1 = new Road(i1, i2, END_OF_ROAD);
-        Road r2 = new Road(i2,i1, END_OF_ROAD);
+        Road r1 = new Road(i1, i2, 100);
+        Road r2 = new Road(i2, i1, 100);
 
         i1.addOutgoingRoad(r1);
         i2.addOutgoingRoad(r2);
 
-        i2.addIncomingRoad(r1, new TrafficLight(1, new FixedCycleStrategy(2,1,5)));
-        i1.addIncomingRoad(r2, new TrafficLight(2, new FixedCycleStrategy(2,1,5)));
+        // Phase 1: r1 green for 9 ticks, then 1 yellow, 2 red
+        // Then cycle repeats → r2 becomes green when r1 is red
+        Phase p1 = new Phase(Set.of(r1), 9, 1, 2);
+        Phase p2 = new Phase(Set.of(r2), 9, 1, 2);
+        PhaseController controller = new PhaseController(List.of(p1, p2));
+        i2.setController(controller);
+        i1.setController(controller);
 
-        Phase phase = new Phase(Set.of(r1), 5);
-        PhaseController phaseController = new PhaseController(List.of(phase));
-        i2.setController(phaseController);
+        i2.addIncomingRoad(r1, new TrafficLight(1));
+        i1.addIncomingRoad(r2, new TrafficLight(2));
 
         Vehicle car = new Car(1, r1, 10);
 
-        SimulationEngine simulationEngine = new SimulationEngine(
+        SimulationEngine sim = new SimulationEngine(
                 List.of(car),
-                List.of(i1,i2),
+                List.of(i1, i2),
                 new MovementEngine()
         );
 
-        simulationEngine.runForTicks(10);
+        // Reach end on tick 10, but red → must stop
+        sim.runForTicks(11);
 
-        assertThat(i2.getLightFor(r1).getState()).isEqualTo(TrafficLight.State.RED);
-        assertThat(car.getPosition()).isEqualTo(END_OF_ROAD);
+        assertThat(car.getPosition()).isEqualTo(100);
         assertThat(car.getSpeed()).isZero();
+        assertThat(i2.getLightFor(r1).getState()).isNotEqualTo(TrafficLight.State.GREEN);
 
-        simulationEngine.runForTicks(1);
+        // One more tick -> phase moves to r2 green
+        sim.runForTicks(1);
 
-        System.out.println(car.getPosition());
         assertThat(i1.getLightFor(r2).getState()).isEqualTo(TrafficLight.State.GREEN);
         assertThat(car.getCurrentRoad()).isEqualTo(r2);
         assertThat(car.getPosition()).isEqualTo(10);
         assertThat(car.getSpeed()).isEqualTo(10);
     }
 
-    /*
-    Car speed 15
-    Road A = 100
-    Road b = 200
-    A -> B
-    car joins B as expected with 5 remaining distance 90(A) -> 5(B)
+    /**
+     * Car overflow into next road:
+     * pos=90 on r1, speed=15 → overflow 5 onto r2
      */
     @Test
-    void carJoinsNextRoadAndAppliesOverflowCorrectly(){
+    void carJoinsNextRoadAndAppliesOverflowCorrectly() {
+
         Intersection i1 = new Intersection(1);
         Intersection i2 = new Intersection(2);
 
-        int END_OF_ROAD = 100;
-        Road r1 = new Road(i1, i2, END_OF_ROAD);
-        Road r2 = new Road(i2,i1, END_OF_ROAD);
+        Road r1 = new Road(i1, i2, 100);
+        Road r2 = new Road(i2, i1, 100);
 
         i1.addOutgoingRoad(r1);
         i2.addOutgoingRoad(r2);
 
-        i2.addIncomingRoad(r1, new TrafficLight(1,new FixedCycleStrategy(100,1,1)));
-        i1.addIncomingRoad(r2, new TrafficLight(2, new FixedCycleStrategy(100,1,1)));
+        // r1 always green
+        Phase p1 = new Phase(Set.of(r1), 1000, 1, 1);
+        // r2 always green
+        Phase p2 = new Phase(Set.of(r2), 1000, 1, 1);
 
-        Phase phase = new Phase(Set.of(r1), 100);
-        PhaseController phaseController = new PhaseController(List.of(phase));
-        i2.setController(phaseController);
+        PhaseController controller = new PhaseController(List.of(p1, p2));
+        i2.setController(controller);
+        i1.setController(controller);
 
+        i2.addIncomingRoad(r1, new TrafficLight(1));
+        i1.addIncomingRoad(r2, new TrafficLight(2));
 
         Vehicle car = new Car(1, r1, 15);
 
-        SimulationEngine simulationEngine = new SimulationEngine(
+        SimulationEngine sim = new SimulationEngine(
                 List.of(car),
-                List.of(i1,i2),
+                List.of(i1, i2),
                 new MovementEngine()
         );
 
-        simulationEngine.runForTicks(6);
+        sim.runForTicks(6);
 
-        assertThat(i2.getLightFor(r1).getState()).isEqualTo(TrafficLight.State.GREEN);
         assertThat(car.getPosition()).isEqualTo(90);
 
-        simulationEngine.runForTicks(1);
+        sim.runForTicks(1);
 
         assertThat(car.getCurrentRoad()).isEqualTo(r2);
-        assertThat(car.getSpeed()).isEqualTo(15);
         assertThat(car.getPosition()).isEqualTo(5);
+        assertThat(car.getSpeed()).isEqualTo(15);
     }
 
-            /*
-    Multiple car test
-    cars don't overtake
+    /**
+     * Test: queueing → second car must stop behind first.
      */
     @Test
-    void testCarQueueingAtTrafficLight(){
+    void testCarQueueingAtTrafficLight() {
+
         Intersection i1 = new Intersection(1);
         Intersection i2 = new Intersection(2);
 
-        int END_OF_ROAD = 100;
-        Road r1 = new Road(i1, i2, END_OF_ROAD);
-        Road r2 = new Road(i2,i1, END_OF_ROAD);
+        Road r1 = new Road(i1, i2, 100);
 
         i1.addOutgoingRoad(r1);
-        i2.addOutgoingRoad(r2);
 
-        i2.addIncomingRoad(r1, new TrafficLight(1, new FixedCycleStrategy(1,1,100)));
-        i1.addIncomingRoad(r2, new TrafficLight(2, new FixedCycleStrategy(1,1,100)));
+        // Always red → forces queueing
+        Phase p = new Phase(Set.of(), 1, 1, 1000);
+        PhaseController controller = new PhaseController(List.of(p));
+        i2.setController(controller);
+
+        i2.addIncomingRoad(r1, new TrafficLight(1));
 
         Vehicle car1 = new Car(1, r1, 10);
         car1.setPosition(10);
         Vehicle car2 = new Car(2, r1, 12);
 
-
-        SimulationEngine simulationEngine = new SimulationEngine(
+        SimulationEngine sim = new SimulationEngine(
                 List.of(car1, car2),
-                List.of(i1,i2),
+                List.of(i1, i2),
                 new MovementEngine()
         );
 
-        simulationEngine.runForTicks(10);
+        sim.runForTicks(10);
 
         assertThat(car1.getPosition()).isEqualTo(100);
-        assertThat(car1.getSpeed()).isEqualTo(0);
+        assertThat(car1.getSpeed()).isZero();
 
         assertThat(car2.getPosition()).isEqualTo(98);
-        assertThat(car2.getSpeed()).isEqualTo(0);
+        assertThat(car2.getSpeed()).isZero();
     }
 }

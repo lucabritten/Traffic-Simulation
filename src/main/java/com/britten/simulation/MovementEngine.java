@@ -52,6 +52,18 @@ public class MovementEngine {
         }
 
         int newPosition = vehicle.getPosition() + distance * vehicle.getSpeed();
+        var intersection = road.getTo();
+        var light = intersection.getLightFor(road);
+        if (light != null && "YELLOW".equals(light.getState().name())) {
+            int distanceToIntersection = road.getLength() - vehicle.getPosition();
+            // if too close to comfortably cross, stop at safe distance
+            if (distanceToIntersection <= SAFE_DISTANCE + vehicle.getSpeed()) {
+                vehicle.setNextRoad(road);
+                vehicle.setNextPosition(road.getLength() - SAFE_DISTANCE);
+                vehicle.setNextSpeed(0);
+                return;
+            }
+        }
         if(newPosition >= road.getLength()){
             computeNextEndOfRoad(vehicle, road ,snapshot , distance);
             return;

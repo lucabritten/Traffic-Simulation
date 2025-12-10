@@ -12,24 +12,40 @@ import static com.britten.domain.TrafficLight.State.RED;
 
 public class PhaseController {
 
-    private List<Phase> phases;
-    private int currentPhase = 0;
-    private int tickInPhase = 0;
+    private List<Phase> signalPlan;
+    private int phaseIndex = 0;
+    private int phaseElapsedTicks = 0;
 
-    public PhaseController(List<Phase> phases){
-        this.phases = phases;
+    public PhaseController(List<Phase> signalPlan){
+        this.signalPlan = signalPlan;
+    }
+
+
+    public TrafficLight.State getCurrentColorFor(Road road) {
+        Phase phase = getCurrentPhase();
+        int tick = phaseElapsedTicks;
+
+        if (!phase.getPermittedFlows().contains(road))
+            return TrafficLight.State.RED;
+
+        if (tick < phase.greenDuration)
+            return TrafficLight.State.GREEN;
+        else if (tick < phase.greenDuration + phase.yellowDuration)
+            return TrafficLight.State.YELLOW;
+        else
+            return TrafficLight.State.RED;
     }
 
     public void update() {
-        tickInPhase++;
-        if (tickInPhase >= phases.get(currentPhase).duration) {
-            tickInPhase = 0;
-            currentPhase = (currentPhase + 1) % phases.size();
+        phaseElapsedTicks++;
+        if (phaseElapsedTicks >= signalPlan.get(phaseIndex).totalDuration()) {
+            phaseElapsedTicks = 0;
+            phaseIndex = (phaseIndex + 1) % signalPlan.size();
         }
     }
 
     public Phase getCurrentPhase(){
-        return phases.get(currentPhase);
+        return signalPlan.get(phaseIndex);
     }
 
     public void applyPhase(Intersection intersection) {
@@ -39,7 +55,7 @@ public class PhaseController {
             Road r = e.getKey();
             TrafficLight light = e.getValue();
 
-            if (phase.greenRoads.contains(r)) {
+            if (phase.getPermittedFlows().contains(r)) {
                 light.setState(GREEN);
             } else {
                 light.setState(RED);

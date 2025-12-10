@@ -28,7 +28,7 @@ public class CollisionResolverTest {
 
         road = new Road(from, to, 200);
 
-        to.addIncomingRoad(road, new TrafficLight(1, new FixedCycleStrategy(2,2,2)));
+        to.addIncomingRoad(road, new TrafficLight(1));
 
         v1 = new Car(1, road, 10);
         v1.setPosition(89);

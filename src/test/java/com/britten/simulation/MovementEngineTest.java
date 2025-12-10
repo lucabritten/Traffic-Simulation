@@ -1,6 +1,5 @@
 package com.britten.simulation;
 
-import com.britten.control.FixedCycleStrategy;
 import com.britten.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +16,7 @@ public class MovementEngineTest {
     private Intersection i2;
     private Road road;
     private Vehicle vehicle;
+    private final static int SAFE_DISTANCE = 2;
 
     @BeforeEach
     void setup() {
@@ -91,5 +91,63 @@ public class MovementEngineTest {
 
         assertThat(vehicle.getNextRoad()).isEqualTo(next);
         assertThat(vehicle.getNextPosition()).isEqualTo(5);
+    }
+
+    @Test
+    void yellowPhaseTooClose_vehicleStops() {
+        Road r = new Road(new Intersection(1), new Intersection(2), 100);
+        Vehicle v = new Car(1, r, 10);
+        v.setPosition(98); // close to end
+
+        TrafficLight yellow = new TrafficLight(1);
+        yellow.setState(TrafficLight.State.YELLOW);
+
+        Intersection i2 = r.getTo();
+        i2.addIncomingRoad(r, yellow);
+
+        MovementEngine engine = new MovementEngine();
+        Snapshot snapshot = new SnapshotBuilder().withVehicle(v).onRoad(r).build();
+
+        engine.computeNext(v, snapshot, 1);
+
+        assertThat(v.getNextSpeed()).isZero();
+        assertThat(v.getNextPosition()).isEqualTo(100 - SAFE_DISTANCE);
+    }
+
+    @Test
+    void yellowPhaseFarEnough_vehicleContinues() {
+        Road r = new Road(new Intersection(1), new Intersection(2), 100);
+        Vehicle v = new Car(1, r, 10);
+        v.setPosition(50);
+
+        TrafficLight yellow = new TrafficLight(1);
+        yellow.setState(TrafficLight.State.YELLOW);
+
+        r.getTo().addIncomingRoad(r, yellow);
+
+        MovementEngine engine = new MovementEngine();
+        Snapshot snapshot = SnapshotBuilder.of(v, r);
+
+        engine.computeNext(v, snapshot, 1);
+
+        assertThat(v.getNextPosition()).isEqualTo(60);
+    }
+
+    @Test
+    void greenPhase_ignoreYellowLogic() {
+        Road r = new Road(new Intersection(1), new Intersection(2), 100);
+        Vehicle v = new Car(1, r, 10);
+
+        TrafficLight green = new TrafficLight(1);
+        green.setState(TrafficLight.State.GREEN);
+
+        r.getTo().addIncomingRoad(r, green);
+
+        MovementEngine engine = new MovementEngine();
+        Snapshot s = SnapshotBuilder.of(v, r);
+
+        engine.computeNext(v, s, 1);
+
+        assertThat(v.getNextPosition()).isEqualTo(10);
     }
 }

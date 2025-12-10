@@ -36,5 +36,18 @@ public class Snapshot {
         return tick;
     }
 
-}
+    public List<Vehicle> getVehiclesOn(Road road) {
+        return roadVehicles.getOrDefault(road, List.of());
+    }
 
+    public Vehicle getFrontVehicle(Road road) {
+        List<Vehicle> list = getVehiclesOn(road);
+        return list.isEmpty() ? null : list.getFirst();
+    }
+
+    public Vehicle getSecondVehicle(Road road) {
+        List<Vehicle> list = getVehiclesOn(road);
+        return list.size() < 2 ? null : list.get(1);
+    }
+
+}
