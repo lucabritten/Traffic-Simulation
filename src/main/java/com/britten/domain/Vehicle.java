@@ -125,7 +125,9 @@ public abstract class Vehicle {
     }
 
     public Road getDestination(){
-            return route.getLast();
+        if (route == null || route.isEmpty())
+            return null;
+        return route.getLast();
     }
 
     public int getRouteIndex() { return routeIndex; }
@@ -143,7 +145,7 @@ public abstract class Vehicle {
     public boolean hasDestinationReached(){
         if (route == null && !routingEnabled)
             return false;
-        if(route == null)
+        if(route == null || route.isEmpty())
             return true;
 
         return routeIndex >= route.size();
@@ -156,6 +158,7 @@ public abstract class Vehicle {
     public void resetNextSpeedToDefault() {
         this.nextSpeed = defaultSpeed;
     }
+
 
     public void enableRouting(){
         if (route == null || route.isEmpty())

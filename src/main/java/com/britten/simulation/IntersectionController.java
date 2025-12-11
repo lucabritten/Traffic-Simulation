@@ -1,19 +1,19 @@
 package com.britten.simulation;
 
 import com.britten.domain.Road;
+import com.britten.domain.TrafficLight;
 import com.britten.domain.Vehicle;
 
 public class IntersectionController {
 
     public boolean mayEnter(Vehicle vehicle, Road from, Snapshot snapshot){
-        String state = snapshot.getLightStates().get(from);
-        if (state == null) return false;
-
+        String string = snapshot.getLightStates().get(from);
+        TrafficLight.State state = TrafficLight.State.valueOf(string);
         // RED → always stop
-        if ("RED".equals(state)) return false;
+        if (state == TrafficLight.State.RED) return false;
 
         // YELLOW → allow only if vehicle is already moving and not stopped at the intersection
-        if ("YELLOW".equals(state)) {
+        if (state == TrafficLight.State.YELLOW) {
             var list = snapshot.getRoadVehicles().get(from);
             if (list == null || list.isEmpty()) return false;
             // vehicle must be first in queue
@@ -23,7 +23,7 @@ public class IntersectionController {
         }
 
         // GREEN → only the front vehicle may enter
-        if ("GREEN".equals(state)) {
+        if (state == TrafficLight.State.GREEN) {
             var list = snapshot.getRoadVehicles().get(from);
             if (list == null || list.isEmpty()) return true;
             return list.getFirst().equals(vehicle);

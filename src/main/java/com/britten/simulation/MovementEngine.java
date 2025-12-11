@@ -198,7 +198,7 @@ public class MovementEngine {
             Road nextRoad
     ) {
         // Case 1: routing enabled → check destination
-        if (vehicle.isRoutingEnabled()) {
+        if (vehicle.isRoutingEnabled() && !vehicle.hasDestinationReached()) {
             if (!vehicle.getDestination().equals(vehicle.getCurrentRoad())) {
                 // Destination not yet reached
                 return false;
