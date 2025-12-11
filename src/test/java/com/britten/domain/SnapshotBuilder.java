@@ -15,6 +15,7 @@ public class SnapshotBuilder {
 
     private Vehicle singleVehicle;
     private Road singleRoad;
+    private List<Vehicle> singleVehicles = null;
 
     // --- Convenience constructors ---
 
@@ -28,8 +29,25 @@ public class SnapshotBuilder {
         return new Snapshot(rm, lm);
     }
 
+    public static Snapshot of(Vehicle[] vehicles, Road r) {
+        Map<Road, List<Vehicle>> rm = new HashMap<>();
+        rm.put(r, List.of(vehicles));
+
+        Map<Road, String> lm = new HashMap<>();
+        lm.put(r, "GREEN");
+
+        return new Snapshot(rm, lm);
+    }
+
     public SnapshotBuilder withVehicle(Vehicle v) {
-        this.singleVehicle = v;
+        if (this.singleVehicles == null) this.singleVehicles = new ArrayList<>();
+        this.singleVehicles.add(v);
+        return this;
+    }
+
+    public SnapshotBuilder withVehicles(Vehicle... vehicles) {
+        if (this.singleVehicles == null) this.singleVehicles = new ArrayList<>();
+        Collections.addAll(this.singleVehicles, vehicles);
         return this;
     }
 
@@ -39,12 +57,16 @@ public class SnapshotBuilder {
     }
 
     public Snapshot build() {
-        if (singleVehicle != null && singleRoad != null) {
+        if (singleVehicles != null && singleRoad != null) {
+            roadMap.put(singleRoad, List.copyOf(singleVehicles));
+        } else if (singleVehicle != null && singleRoad != null) {
             roadMap.put(singleRoad, List.of(singleVehicle));
         }
-        if (!lightMap.containsKey(singleRoad)) {
-            lightMap.put(singleRoad, "GREEN"); // default
+        // ensure every road present in roadMap has a default light state
+        for (Road r : roadMap.keySet()) {
+            lightMap.putIfAbsent(r, "GREEN");
         }
+        // also ensure any explicitly added light entries are preserved
         return new Snapshot(roadMap, lightMap);
     }
 
