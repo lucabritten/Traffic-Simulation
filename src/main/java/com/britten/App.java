@@ -29,6 +29,7 @@ public class App {
         );
 
         engine.addListener(new ConsoleLogger());
-        engine.runForTicks(100);
+//        engine.runForTicks(100);
+        engine.runUntilDone();
     }
 }

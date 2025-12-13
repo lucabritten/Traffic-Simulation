@@ -87,13 +87,24 @@ public class SimulationEngine {
                     state
             );
         });
+        globalTick++;
     }
 
     public void runForTicks(int totalTicks){
         for (int j = 0; j < totalTicks; j++) {
             tick(1, globalTick);
             System.out.println("Tick " + globalTick);
-            globalTick++;
+        }
+    }
+
+    public void runUntilDone(){
+        boolean isFinished = false;
+        while (!isFinished){
+            tick(1, globalTick);
+            isFinished = vehicles.stream()
+                    .filter(v -> v.isRoutingEnabled() && !v.hasDestinationReached())
+                    .toList()
+                    .isEmpty();
         }
     }
 
@@ -160,5 +171,9 @@ public class SimulationEngine {
 
     public void publish(SimulationEvent event){
         listeners.forEach(l -> l.onEvent(event));
+    }
+
+    public int getGlobalTick(){
+        return globalTick;
     }
 }
