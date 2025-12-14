@@ -33,11 +33,21 @@ public class MovementEngine {
 
     public void computeNext(Vehicle vehicle, Snapshot snapshot, int distance){
 
-        if(handleIfVehicleAhead(vehicle,snapshot,distance)) return;
-        if(handelIfYellowLight(vehicle)) return;
-        if(handleEndOfRoad(vehicle,snapshot,distance)) return;
+        if(handleIfVehicleAhead(vehicle,snapshot,distance)) {
+            publishVehicleWaitingIfNeeded(vehicle, snapshot);
+            return;
+        }
+        if(handelIfYellowLight(vehicle, snapshot)) {
+            publishVehicleWaitingIfNeeded(vehicle, snapshot);
+            return;
+        }
+        if(handleEndOfRoad(vehicle,snapshot,distance)) {
+            publishVehicleWaitingIfNeeded(vehicle, snapshot);
+            return;
+        }
 
         applyDefaultMovement(vehicle,distance);
+        publishVehicleWaitingIfNeeded(vehicle, snapshot);
     }
 
     /**
@@ -62,6 +72,7 @@ public class MovementEngine {
 
                 vehicle.setNextPosition(targetPos);
                 vehicle.setNextSpeed(VEHICLE_STANDING);
+                publishVehicleStoppedIfNeeded(vehicle, snapshot);
                 vehicle.setNextRoad(road);
                 return true;
             }
@@ -85,7 +96,7 @@ public class MovementEngine {
      *
      * @return true if movement was handled and computeNext should exit
      */
-    private boolean handelIfYellowLight(Vehicle vehicle){
+    private boolean handelIfYellowLight(Vehicle vehicle, Snapshot snapshot){
         Road road = vehicle.getCurrentRoad();
         var intersection = road.getTo();
         var light = intersection.getLightFor(road);
@@ -96,7 +107,8 @@ public class MovementEngine {
             if (distanceToIntersection <= SAFE_DISTANCE + vehicle.getSpeed()) {
                 vehicle.setNextRoad(road);
                 vehicle.setNextPosition(road.getLength());
-                vehicle.setNextSpeed(0);
+                vehicle.setNextSpeed(VEHICLE_STANDING);
+                publishVehicleStoppedIfNeeded(vehicle, snapshot);
                 return true;
             }
         }
@@ -162,7 +174,8 @@ public class MovementEngine {
         if(!intersectionController.mayEnter(vehicle,road,snapshot)){
             vehicle.setNextRoad(road);
             vehicle.setNextPosition(road.getLength());
-            vehicle.setNextSpeed(0);
+            vehicle.setNextSpeed(VEHICLE_STANDING);
+            publishVehicleStoppedIfNeeded(vehicle, snapshot);
             return true;
         }
         return false;
@@ -197,7 +210,8 @@ public class MovementEngine {
     private void handleArrivalEvent(Vehicle vehicle, Road road, Snapshot snapshot){
         vehicle.setNextRoad(road);
         vehicle.setNextPosition(road.getLength());
-        vehicle.setNextSpeed(0);
+        vehicle.setNextSpeed(VEHICLE_STANDING);
+        publishVehicleStoppedIfNeeded(vehicle, snapshot);
 
         vehicle.setRoute(null);
 
@@ -236,5 +250,35 @@ public class MovementEngine {
 
     private int calcRemainingDistance(Vehicle vehicle, Road currentRoad, int distance){
         return (distance * vehicle.getDefaultSpeed()) - (currentRoad.getLength() - vehicle.getPosition());
+    }
+
+    // Helper to publish VEHICLE_STOPPED event if speed transitions from >0 to 0
+    private void publishVehicleStoppedIfNeeded(Vehicle vehicle, Snapshot snapshot) {
+        if (publisher == null || snapshot == null) return;
+
+        if (vehicle.getSpeed() > 0 && vehicle.getNextSpeed() == 0) {
+            publisher.publish(
+                    new SimulationEvent(
+                            "VEHICLE_STOPPED",
+                            snapshot.getTick(),
+                            Map.of("vehicleId", vehicle.getId())
+                    )
+            );
+        }
+    }
+
+    // Helper to publish VEHICLE_WAITING event if speed == 0 and nextSpeed == 0
+    private void publishVehicleWaitingIfNeeded(Vehicle vehicle, Snapshot snapshot) {
+        if (publisher == null || snapshot == null) return;
+
+        if (vehicle.getSpeed() == 0 && vehicle.getNextSpeed() == 0) {
+            publisher.publish(
+                    new SimulationEvent(
+                            "VEHICLE_WAITING",
+                            snapshot.getTick(),
+                            Map.of("vehicleId", vehicle.getId())
+                    )
+            );
+        }
     }
 }
