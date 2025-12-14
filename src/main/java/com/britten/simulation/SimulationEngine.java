@@ -6,7 +6,6 @@ import com.britten.domain.TrafficLight;
 import com.britten.domain.Vehicle;
 import com.britten.logging.SimulationEvent;
 import com.britten.logging.SimulationEventListener;
-import com.britten.ui.AsciiRenderer;
 
 import java.util.ArrayList;
 import java.util.HashMap;

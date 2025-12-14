@@ -1,4 +1,4 @@
-package com.britten.domain;
+package com.britten.testutil;
 
 import com.britten.domain.*;
 import com.britten.simulation.Snapshot;

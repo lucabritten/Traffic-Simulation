@@ -257,6 +257,7 @@ public class MovementEngine {
         if (publisher == null || snapshot == null) return;
 
         if (vehicle.getSpeed() > 0 && vehicle.getNextSpeed() == 0) {
+            System.out.println("STOPPED!!!!!!");
             publisher.publish(
                     new SimulationEvent(
                             "VEHICLE_STOPPED",

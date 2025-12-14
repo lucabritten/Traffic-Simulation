@@ -1,6 +1,7 @@
 package com.britten.simulation;
 
 import com.britten.domain.*;
+import com.britten.testutil.SnapshotBuilder;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
