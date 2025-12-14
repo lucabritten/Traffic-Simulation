@@ -1,5 +1,7 @@
 package com.britten;
 
+import com.britten.benchmark.SimulationResult;
+import com.britten.benchmark.SimulationRunner;
 import com.britten.domain.Intersection;
 import com.britten.domain.Vehicle;
 import com.britten.factory.SquareGraphFactory;
@@ -14,22 +16,26 @@ import java.util.List;
 public class App {
     public static void main(String[] args) {
 
-        GraphFactory factory = new SquareGraphFactory();
+//        GraphFactory factory = new SquareGraphFactory();
+//
+//        RoadNetwork network = factory.buildNetwork();
+//
+//        List<Intersection> intersections = factory.getIntersections();
+//
+//        List<Vehicle> vehicles = factory.createVehicles(network);
+//
+//        SimulationEngine engine = new SimulationEngine(
+//                vehicles,
+//                intersections,
+//                new MovementEngine()
+//        );
+//
+//        engine.addListener(new ConsoleLogger());
+////        engine.runForTicks(100);
+//        engine.runUntilDone();
 
-        RoadNetwork network = factory.buildNetwork();
-
-        List<Intersection> intersections = factory.getIntersections();
-
-        List<Vehicle> vehicles = factory.createVehicles(network);
-
-        SimulationEngine engine = new SimulationEngine(
-                vehicles,
-                intersections,
-                new MovementEngine()
-        );
-
-        engine.addListener(new ConsoleLogger());
-//        engine.runForTicks(100);
-        engine.runUntilDone();
+        SimulationRunner runner = new SimulationRunner();
+        SimulationResult result = runner.run(new SquareGraphFactory());
+        System.out.println(result);
     }
 }

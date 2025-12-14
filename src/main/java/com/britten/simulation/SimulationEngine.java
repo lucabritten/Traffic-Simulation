@@ -6,6 +6,7 @@ import com.britten.domain.TrafficLight;
 import com.britten.domain.Vehicle;
 import com.britten.logging.SimulationEvent;
 import com.britten.logging.SimulationEventListener;
+import com.britten.ui.AsciiRenderer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -97,7 +98,7 @@ public class SimulationEngine {
         }
     }
 
-    public void runUntilDone(){
+    public int runUntilDone(){
         boolean isFinished = false;
         while (!isFinished){
             tick(1, globalTick);
@@ -106,6 +107,7 @@ public class SimulationEngine {
                     .toList()
                     .isEmpty();
         }
+        return globalTick;
     }
 
     public void applyNextStates(int tick) {

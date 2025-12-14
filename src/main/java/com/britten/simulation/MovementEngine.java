@@ -136,13 +136,21 @@ public class MovementEngine {
 
     private void computeNextEndOfRoad(Vehicle vehicle, Road road, Snapshot snapshot, int distance) {
 
+        if(vehicle.getRoute() != null && vehicle.peekNextRoad() == vehicle.getDestination()) {
+            handleArrivalEvent(vehicle, road, snapshot);
+            return;
+        }
+
         if(handleIntersectionEntry(vehicle,road,snapshot)) return;
 
         Road next = determineNextRoad(vehicle, road);
 
-        if(handleVehicleArrival(vehicle, vehicle.getCurrentRoad(), snapshot, next)) return;
+        if(next == null){
+            handleArrivalEvent(vehicle, road, snapshot);
+            return;
+        }
 
-        moveVehicleToNextRoad(vehicle, vehicle.getCurrentRoad(), next, distance);
+        moveVehicleToNextRoad(vehicle, road, next, distance);
     }
 
     /**
@@ -186,57 +194,25 @@ public class MovementEngine {
 
     }
 
-    /**
-     * Handles arrival logic when no next road exists.
-     *
-     * @return true if the vehicle arrived and no further processing is needed
-     */
-    private boolean handleVehicleArrival(
-            Vehicle vehicle,
-            Road currentRoad,
-            Snapshot snapshot,
-            Road nextRoad
-    ) {
-        // Case 1: routing enabled → check destination
-        if (vehicle.isRoutingEnabled() && !vehicle.hasDestinationReached()) {
-            if (!vehicle.getDestination().equals(vehicle.getCurrentRoad())) {
-                // Destination not yet reached
-                return false;
-            }
-            // Destination reached → arrival handled below
-        }
-        // Case 2: routing disabled → arrival only if dead-end
-        else {
-            if (nextRoad != null) {
-                return false;
-            }
-        }
-
-        // Arrival logic
-        vehicle.setNextRoad(currentRoad);
-        vehicle.setNextPosition(currentRoad.getLength());
+    private void handleArrivalEvent(Vehicle vehicle, Road road, Snapshot snapshot){
+        vehicle.setNextRoad(road);
+        vehicle.setNextPosition(road.getLength());
         vehicle.setNextSpeed(0);
 
         vehicle.setRoute(null);
-        vehicle.advanceToNextRoad();
 
-        if (publisher != null) {
+        if(publisher != null){
             publisher.publish(
                     new SimulationEvent(
                             "VEHICLE_ARRIVED",
                             snapshot.getTick(),
                             Map.of(
                                     "vehicleId", vehicle.getId(),
-                                    "roadId", currentRoad,
-                                    "destinationId",
-                                    vehicle.getDestination() != null
-                                            ? vehicle.getDestination()
-                                            : currentRoad.getTo().getId()
+                                    "intersectionId", road.getTo().getId()
                             )
                     )
             );
         }
-        return true;
     }
 
     /**

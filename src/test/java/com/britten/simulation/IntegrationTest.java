@@ -1,6 +1,8 @@
 package com.britten.simulation;
 
 import com.britten.domain.*;
+import com.britten.logging.SimulationEvent;
+import com.britten.logging.SimulationEventListener;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
