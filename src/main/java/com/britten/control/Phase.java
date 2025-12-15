@@ -9,6 +9,7 @@ import java.util.Set;
 public class Phase {
     private Set<Road> permittedFlows;
     private int greenDuration;
+    private int maxGreenDuration;
     private int yellowDuration;
     private int redDuration;
 
@@ -25,6 +26,11 @@ public class Phase {
     }
     public Phase(Set<Road> permittedFlows, int duration) {
         this(permittedFlows, duration, duration, duration);
+    }
+
+    public Phase(Set<Road> permittedFlows, int greenDuration, int yellowDuration, int redDuration, int maxGreenDuration){
+        this(permittedFlows, greenDuration, yellowDuration, redDuration);
+        this.maxGreenDuration = maxGreenDuration;
     }
 
 
@@ -59,6 +65,10 @@ public class Phase {
 
     public int getGreenDuration(){
         return greenDuration;
+    }
+
+    public int getMaxGreenDuration(){
+        return maxGreenDuration;
     }
 
 }
