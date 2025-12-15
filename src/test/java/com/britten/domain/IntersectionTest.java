@@ -76,4 +76,49 @@ public class IntersectionTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Road needs to be outgoing from this intersection!");
     }
+
+    @Test
+    void getWaitingVehicles_countsVehicle_whenWaitingAtTheEndOfRoad(){
+        Intersection intersection1 = new Intersection(1);
+        Intersection intersection2 = new Intersection(2);
+        Road road = new Road(intersection1, intersection2, 100);
+        TrafficLight light = new TrafficLight(1);
+        Vehicle car = new Car(1, road, 10);
+
+        car.setPosition(100);
+        car.setSpeed(0);
+        road.addVehicle(car);
+        intersection2.addIncomingRoad(road,light);
+
+        assertThat(intersection2.getVehiclesWaitingAtStopline(road))
+                .isEqualTo(1);
+    }
+
+    @Test
+    void getQueueLength_countsAllWaitingVehicles(){
+        Intersection intersection1 = new Intersection(1);
+        Intersection intersection2 = new Intersection(2);
+        Road road = new Road(intersection1, intersection2, 100);
+        TrafficLight light = new TrafficLight(1);
+
+        Vehicle car1 = new Car(1, road, 10);
+        Vehicle car2 = new Car(2, road, 10);
+        Vehicle car3 = new Car(3, road, 10);
+
+        car1.setPosition(100);
+        car1.setSpeed(0);
+        road.addVehicle(car1);
+
+        car2.setPosition(98);
+        car2.setSpeed(0);
+        road.addVehicle(car2);
+
+        car3.setPosition(96);
+        car3.setSpeed(0);
+        road.addVehicle(car3);
+        intersection2.addIncomingRoad(road,light);
+
+        assertThat(intersection2.getQueueLength(road))
+                .isEqualTo(3);
+    }
 }

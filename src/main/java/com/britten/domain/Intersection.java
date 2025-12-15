@@ -70,6 +70,7 @@ public class Intersection {
     public void setController(PhaseController controller) {
         this.controller = controller;
     }
+
     private boolean checkForDuplicateRoad(Road road){
         Road existing = outgoingRoads.stream()
                 .filter(r -> r.getTo() == road.getTo())
@@ -78,6 +79,40 @@ public class Intersection {
 
         return existing != null;
     }
+
+    public int getVehiclesWaitingAtStopline(Road road){
+        if(road == null)
+            throw new IllegalArgumentException("Road must not be null");
+
+        if(!incomingRoads.contains(road))
+            return 0;
+
+        TrafficLight light = entryLights.get(road);
+
+        return (int) road.getVehiclesOnRoad().stream()
+                .filter(v -> v.getSpeed() == 0)
+                .filter(v -> v.getPosition() >= road.getLength() - 2)
+                .filter(v -> light == null
+                        || light.getState().equals(TrafficLight.State.RED)
+                        || light.getState().equals(TrafficLight.State.YELLOW)
+                )
+                .count();
+    }
+
+    public int getQueueLength(Road road) {
+        if (road == null) {
+            throw new IllegalArgumentException("Road must not be null");
+        }
+
+        if (!incomingRoads.contains(road)) {
+            return 0;
+        }
+
+        return (int) road.getVehiclesOnRoad().stream()
+                .filter(v -> v.getSpeed() == 0)
+                .count();
+    }
+
 
     @Override
     public String toString() {
