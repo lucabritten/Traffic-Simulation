@@ -23,7 +23,6 @@ public class Phase {
         this.yellowDuration = yellowDuration;
         this.greenDuration = greenDuration;
     }
-
     public Phase(Set<Road> permittedFlows, int duration) {
         this(permittedFlows, duration, duration, duration);
     }
@@ -56,6 +55,10 @@ public class Phase {
 
     public Set<Road> getPermittedFlows() {
         return permittedFlows;
+    }
+
+    public int getGreenDuration(){
+        return greenDuration;
     }
 
 }
